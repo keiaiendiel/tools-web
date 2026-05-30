@@ -1,0 +1,234 @@
+---
+/* /lab — the index of design-exploration variants.
+   The page Antonín lands on to review the five directions and pick a home.
+   On-brand ink-on-paper; the previews are the visual interest. */
+import '../../styles/tokens.css';
+import VariantNav from '../../components/variants/VariantNav.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const variants = [
+  {
+    n: 1,
+    name: 'Press',
+    concept: 'Ink on paper, pushed to a printed object. Riso misregistration, letterpress type, a quiet ink bleed in the claim.',
+    tags: ['light', 'editorial', 'tactile', 'type-led'],
+  },
+  {
+    n: 2,
+    name: 'Terminal',
+    concept: 'A living ASCII field you disturb with the cursor, and a terminal you can actually type into to walk the studio.',
+    tags: ['dark', 'interactive', 'game-like', 'ascii'],
+  },
+  {
+    n: 3,
+    name: 'Composition',
+    concept: 'A parametric music video. An optional generative score drives the field; scroll scrubs the timeline, copy lands as captions.',
+    tags: ['audio-reactive', 'motion', 'cinematic'],
+  },
+  {
+    n: 4,
+    name: 'Schematic',
+    concept: 'The studio drawn as an engineering sheet. Dimension lines, a title block, ink that draws itself on the way down.',
+    tags: ['blueprint', 'svg', 'precise', 'technical'],
+  },
+  {
+    n: 5,
+    name: 'Field',
+    concept: 'A three-dimensional field of glyphs in real WebGL. The claim assembles out of a point cloud you move through.',
+    tags: ['webgl', '3d', 'immersive', 'spatial'],
+  },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Design exploration for tools.kindl.work - five distinct web experiences for the same small-software studio." />
+    <meta name="theme-color" content="#f4f1ea" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href={base + 'favicon.svg'} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    />
+    <title>The lab - five readings of one studio - tools.kindl.work</title>
+  </head>
+  <body class="lab">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="lab__top">
+      <span class="lab__wm">k<b>.</b>work</span>
+      <span class="lab__topright">design exploration</span>
+    </header>
+
+    <main id="main" class="lab__wrap">
+      <section class="lab__head">
+        <p class="lab__eyebrow">tools.kindl.work / variants</p>
+        <h1 class="lab__title">Five ways to open<br />the same studio.</h1>
+        <p class="lab__sub">
+          One small-software practice, built as five different web experiences. Same copy, same studio,
+          five aesthetics. Open each, live with it for a minute, and we choose the home together.
+        </p>
+        <p class="lab__note">
+          <a href={base}>← the current site</a>
+          <span class="lab__dot">·</span>
+          built alongside the art studio at <a href="https://kindl.work" target="_blank" rel="noopener">kindl.work&nbsp;↗</a>
+        </p>
+      </section>
+
+      <ol class="lab__list">
+        {variants.map((v) => (
+          <li class="lab__item">
+            <a class="lab__link" href={base + v.n} aria-label={`Open variant ${v.n}, ${v.name}`}>
+              <div class="lab__thumb">
+                <img
+                  src={`${base}lab/v${v.n}.jpg`}
+                  alt={`Preview of variant ${v.n}, ${v.name}`}
+                  loading="lazy"
+                  width="860" height="538"
+                  onerror="this.style.display='none';this.parentElement.classList.add('is-empty')"
+                />
+                <span class="lab__thumbno">{String(v.n).padStart(2, '0')}</span>
+              </div>
+              <div class="lab__meta">
+                <h2 class="lab__name">
+                  <span class="lab__no">{String(v.n).padStart(2, '0')}</span>
+                  {v.name}
+                </h2>
+                <p class="lab__concept">{v.concept}</p>
+                <ul class="lab__tags">
+                  {v.tags.map((t) => <li>{t}</li>)}
+                </ul>
+                <span class="lab__open">open <span class="lab__arrow">→</span></span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      <footer class="lab__foot">
+        <span>Antonín Kindl - small software, made to fit.</span>
+        <span class="lab__footr">exploration · not indexed</span>
+      </footer>
+    </main>
+
+    <VariantNav current={0} />
+
+    <style is:global>
+      .skip-link {
+        position: absolute; left: -9999px; top: 0;
+        background: #17150f; color: #f4f1ea; padding: 8px 12px; z-index: 10000;
+        font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      }
+      .skip-link:focus { left: 8px; top: 8px; }
+    </style>
+
+    <style>
+      .lab { background: var(--paper); color: var(--ink); min-height: 100vh; padding-bottom: 96px; }
+
+      .lab__top {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px clamp(20px, 5vw, 80px);
+        border-bottom: 1px solid var(--rule);
+        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+        color: var(--ink-soft);
+      }
+      .lab__wm { font-family: var(--font-pixel); font-size: 1.2rem; letter-spacing: 0; color: var(--ink); }
+      .lab__wm b { color: var(--accent); }
+      .lab__topright { text-transform: uppercase; letter-spacing: 0.22em; font-size: 11px; color: var(--ink-faint); }
+
+      .lab__wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: clamp(20px, 5vw, 80px); }
+
+      .lab__head { padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 72px); }
+      .lab__eyebrow {
+        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
+        text-transform: uppercase; color: var(--accent); margin: 0 0 24px;
+      }
+      .lab__title {
+        font-family: var(--font-serif); font-weight: 600;
+        font-size: clamp(2.6rem, 7vw, 5.2rem); line-height: 1.02; letter-spacing: -0.02em;
+        margin: 0; text-wrap: balance;
+      }
+      .lab__sub {
+        margin: 28px 0 0; max-width: 56ch;
+        font-family: var(--font-mono); font-size: 15px; line-height: 1.62; color: var(--ink-soft);
+      }
+      .lab__note {
+        margin: 24px 0 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint);
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      }
+      .lab__note a { color: var(--ink-soft); border-bottom: 1px solid var(--accent-line); }
+      .lab__note a:hover { color: var(--accent); }
+      .lab__dot { color: var(--ink-faint); }
+
+      .lab__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+      .lab__item { border-bottom: 1px solid var(--rule); }
+      .lab__link {
+        display: grid; grid-template-columns: 0.92fr 1.08fr; gap: clamp(24px, 4vw, 56px);
+        align-items: center; padding-block: clamp(28px, 4vw, 48px);
+        color: inherit; text-decoration: none;
+        transition: opacity 0.25s ease;
+      }
+      .lab__item:hover .lab__thumb img { transform: scale(1.03); }
+      .lab__item:hover .lab__open { color: var(--accent); }
+      .lab__item:hover .lab__arrow { transform: translateX(5px); }
+
+      .lab__thumb {
+        position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+        background: var(--paper-2); border: 1px solid var(--rule);
+      }
+      .lab__thumb img {
+        width: 100%; height: 100%; object-fit: cover; display: block;
+        transition: transform 0.5s var(--ease);
+      }
+      .lab__thumb.is-empty {
+        background:
+          repeating-linear-gradient(135deg, transparent 0 11px, rgba(54,44,202,0.05) 11px 12px),
+          var(--paper-2);
+      }
+      .lab__thumbno {
+        position: absolute; left: 12px; bottom: 8px;
+        font-family: var(--font-pixel); font-size: 1.4rem; color: var(--accent);
+        mix-blend-mode: multiply; opacity: 0.9;
+      }
+
+      .lab__name {
+        font-family: var(--font-serif); font-weight: 600; font-size: clamp(1.8rem, 3.4vw, 2.75rem);
+        line-height: 1.05; letter-spacing: -0.02em; margin: 0;
+        display: flex; align-items: baseline; gap: 16px;
+      }
+      .lab__no {
+        font-family: var(--font-mono); font-weight: 500; font-size: 13px;
+        letter-spacing: 0.22em; color: var(--accent); align-self: center;
+      }
+      .lab__concept { margin: 16px 0 0; max-width: 52ch; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
+      .lab__tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+      .lab__tags li {
+        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em;
+        padding: 4px 9px; border: 1px solid var(--rule); color: var(--ink-faint);
+      }
+      .lab__open {
+        display: inline-flex; align-items: center; gap: 8px; margin-top: 22px;
+        font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--ink); transition: color 0.2s ease;
+      }
+      .lab__arrow { transition: transform 0.2s var(--ease); }
+
+      .lab__foot {
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+        margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--rule);
+        font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); letter-spacing: 0.03em;
+      }
+      .lab__footr { text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; }
+
+      @media (max-width: 760px) {
+        .lab__link { grid-template-columns: 1fr; gap: 18px; }
+        .lab__name { font-size: 1.9rem; }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+---
+/* VariantNav — a small frosted switcher shared by every design variant.
+   Fixed, theme-agnostic (frosted dark glass reads on light or dark grounds),
+   self-contained scoped styles so it never collides with a variant's CSS.
+   `current` = the active variant number (1-5), 0 = none (the lab index). */
+const { current = 0 } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const names = { 1: 'Press', 2: 'Terminal', 3: 'Composition', 4: 'Schematic', 5: 'Field' };
+const nums = [1, 2, 3, 4, 5];
+---
+<nav class="vnav" aria-label="Design variants" data-vnav>
+  <a class="vnav__lab" href={base + 'lab'} title="All variants">lab</a>
+  <span class="vnav__sep" aria-hidden="true">/</span>
+  <ul class="vnav__list">
+    {nums.map((n) => (
+      <li>
+        <a
+          class={'vnav__n' + (n === current ? ' is-on' : '')}
+          href={base + n}
+          aria-current={n === current ? 'page' : undefined}
+          title={names[n]}
+        >{String(n).padStart(2, '0')}</a>
+      </li>
+    ))}
+  </ul>
+  <a class="vnav__home" href="https://kindl.work" target="_blank" rel="noopener">kindl.work&nbsp;↗</a>
+</nav>
+
+<style>
+  .vnav {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 14px;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background: rgba(16, 15, 20, 0.72);
+    color: #e9e7df;
+    border: 1px solid rgba(233, 231, 223, 0.16);
+    border-radius: 3px;
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    box-shadow: 0 8px 34px rgba(0, 0, 0, 0.30);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .vnav a { color: #b6b2c2; text-decoration: none; transition: color 0.15s ease; }
+  .vnav a:hover { color: #fff; }
+  .vnav__sep { color: rgba(233, 231, 223, 0.28); }
+  .vnav__lab { color: #9a96a8; }
+  .vnav__list { display: flex; gap: 9px; margin: 0; padding: 0; list-style: none; }
+  .vnav__n { font-variant-numeric: tabular-nums; position: relative; padding-bottom: 2px; }
+  .vnav__n.is-on { color: #fff; }
+  .vnav__n.is-on::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: #6f66e6;
+  }
+  .vnav__home {
+    margin-left: 4px;
+    padding-left: 11px;
+    border-left: 1px solid rgba(233, 231, 223, 0.16);
+    color: #9a96a8;
+    white-space: nowrap;
+  }
+  @media (max-width: 540px) {
+    .vnav { bottom: 10px; gap: 9px; padding: 7px 11px; font-size: 11px; }
+    .vnav__home { display: none; }
+  }
+  @media print { .vnav { display: none; } }
+</style>

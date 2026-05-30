@@ -1,0 +1,752 @@
+/* =============================================================================
+   v5.css - "FIELD"
+   -----------------------------------------------------------------------------
+   An immersive, spatial landing. A hand-written WebGL point-cloud typography
+   field is the air and the headline mechanism: words built from thousands of
+   floating points, dollied through on scroll. Real, selectable copy lives in
+   DOM panels layered over the field, each panel sitting on a soft scrim so the
+   text stays legible against the depth.
+
+   Deep near-black indigo ground (#07070c) with a single sharp accent: the
+   studio blue #362cca. Points are warm paper-white, tinted toward the accent by
+   depth. No second accent, no decorative gradients in chrome.
+
+   House rule: no em dashes or en dashes anywhere, including these comments. Use
+   ' - ', commas, periods. Every selector is scoped under .v5 (the class lives on
+   <body> and on <main>).
+============================================================================= */
+
+/* ---------- local tokens for the dark field ---------- */
+.v5 {
+  --v5-ground:    #07070c;   /* deep near-black, blue cast */
+  --v5-ground-2:  #0a0a14;
+  --v5-accent:    #362cca;   /* the studio blue, the one accent */
+  --v5-accent-lit:#6f66e6;   /* lifted blue for type accents on dark */
+  --v5-paper:     #efeae0;   /* warm paper-white, the point colour as text */
+  --v5-ink:       #ece9f3;   /* near-paper text on the ground */
+  --v5-ink-soft:  rgba(236, 233, 243, 0.66);
+  --v5-ink-faint: rgba(236, 233, 243, 0.40);
+  --v5-ink-ghost: rgba(236, 233, 243, 0.22);
+  --v5-line:      rgba(150, 142, 220, 0.16);
+  --v5-line-lit:  rgba(120, 110, 230, 0.44);
+  --v5-scrim:     rgba(7, 7, 14, 0.66);
+  --v5-scrim-2:   rgba(7, 7, 14, 0.82);
+
+  --v5-ease:      cubic-bezier(0.2, 0, 0, 1);
+  --v5-ease-out:  cubic-bezier(0, 0, 0.2, 1);
+
+  background: var(--v5-ground);
+  color: var(--v5-ink);
+  font-family: var(--font-mono);
+  overflow-x: hidden;
+}
+.v5 .skip-link { z-index: 12000; }
+.v5 ::selection { background: var(--v5-accent); color: var(--v5-paper); }
+
+/* The <main> carries the scroll surface; the stations stack over the field. */
+main.v5 {
+  position: relative;
+  z-index: 10;
+  display: block;
+  /* main also carries the .v5 class, so the .v5 { background } rule paints an
+     opaque ground over the fixed WebGL field. Null it out here so the point
+     cloud (z-index 0) shows through the transparent panels. The body keeps the
+     ground colour; substance panels carry their own scrim. */
+  background: transparent;
+}
+
+/* =============================================================================
+   THE FIELD - fixed full-bleed WebGL canvas the point cloud lives on
+============================================================================= */
+.v5-field {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  height: 100dvh;
+  z-index: 0;
+  display: block;
+  background:
+    radial-gradient(118% 86% at 50% 16%, rgba(54, 44, 202, 0.20), transparent 58%),
+    radial-gradient(150% 130% at 50% 120%, rgba(54, 44, 202, 0.08), transparent 56%),
+    var(--v5-ground);
+  touch-action: pan-y;
+}
+
+/* Depth-of-field vignette: pulls the eye to centre, darkens the edges so copy
+   panels and the field both read. */
+.v5-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(128% 108% at 50% 44%, transparent 36%, rgba(5, 5, 11, 0.52) 76%, rgba(3, 3, 8, 0.88) 100%),
+    linear-gradient(180deg, rgba(4, 4, 10, 0.46) 0%, transparent 16%, transparent 82%, rgba(3, 3, 8, 0.58) 100%);
+}
+
+/* Fine film grain over the whole field, drifting. A tiny SVG noise tile. */
+.v5-grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  animation: v5-grain-drift 5.6s steps(6) infinite;
+  will-change: transform;
+}
+@keyframes v5-grain-drift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-5%, 3%); }
+  40%  { transform: translate(4%, -4%); }
+  60%  { transform: translate(-3%, 5%); }
+  80%  { transform: translate(5%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* =============================================================================
+   FIELD TOGGLE - pause / resume the cloud. Small, reachable, top-right.
+   Kept clear of the bottom-centre variant switcher and under its z-index.
+============================================================================= */
+.v5-toggle {
+  position: fixed;
+  top: clamp(14px, 3vw, 26px);
+  right: clamp(14px, 3vw, 30px);
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v5-ink-soft);
+  background: rgba(9, 9, 18, 0.5);
+  border: 1px solid var(--v5-line);
+  border-radius: 2px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: color 0.25s var(--v5-ease), border-color 0.25s var(--v5-ease), background 0.25s var(--v5-ease);
+}
+.v5-toggle:hover { color: var(--v5-ink); border-color: var(--v5-line-lit); }
+.v5-toggle:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(111, 102, 230, 0.55); }
+.v5-toggle__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--v5-accent-lit);
+  box-shadow: 0 0 10px rgba(111, 102, 230, 0.75);
+  transition: background 0.25s var(--v5-ease), box-shadow 0.25s var(--v5-ease), transform 0.25s var(--v5-ease);
+}
+/* running (aria-pressed=true): the dot breathes; paused: it goes dim and still */
+.v5-toggle[aria-pressed='true'] .v5-toggle__dot {
+  animation: v5-dot-pulse 2.2s ease-in-out infinite;
+}
+.v5-toggle[aria-pressed='false'] {
+  color: var(--v5-ink-faint);
+}
+.v5-toggle[aria-pressed='false'] .v5-toggle__dot {
+  background: var(--v5-ink-faint);
+  box-shadow: none;
+  transform: scale(0.8);
+}
+@keyframes v5-dot-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(111, 102, 230, 0.7); }
+  50%      { transform: scale(1.25); box-shadow: 0 0 16px rgba(111, 102, 230, 0.95); }
+}
+.v5-toggle__label { line-height: 1; }
+
+/* =============================================================================
+   STATIONS - the stacked scroll panels over the fixed field
+   Each station is roughly one viewport tall; the panel inside carries a scrim
+   so copy stays legible over the moving point cloud.
+============================================================================= */
+.v5-station {
+  position: relative;
+  z-index: 10;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  padding: clamp(96px, 15vh, 168px) var(--gutter) clamp(72px, 11vh, 130px);
+}
+/* Hero centres a touch higher; band centres dead centre. */
+.v5-station[data-station='0'] { align-items: center; }
+.v5-station--band { align-items: center; justify-content: center; text-align: center; }
+
+/* The readable panel. A column with a soft scrim and a hairline accent edge. */
+.v5-panel {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+/* Scrim card behind the substance panels (everything but hero and band, which
+   float free over the field for drama). The scrim is a soft radial fade, not a
+   hard box, so the field still bleeds through at the edges. */
+.v5-panel--how,
+.v5-panel--bench,
+.v5-panel--fields,
+.v5-panel--ships,
+.v5-panel--order {
+  padding: clamp(28px, 4vw, 52px);
+  background:
+    radial-gradient(120% 100% at 30% 0%, var(--v5-scrim) 0%, rgba(7, 7, 14, 0.40) 70%, transparent 100%);
+  border: 1px solid var(--v5-line);
+  border-radius: 3px;
+  backdrop-filter: blur(7px) saturate(1.05);
+  -webkit-backdrop-filter: blur(7px) saturate(1.05);
+}
+
+/* =============================================================================
+   STATION 00 - HERO  (floats free over the field; the cloud spells the claim)
+============================================================================= */
+.v5-panel--hero { max-width: 1040px; }
+
+.v5-eyebrow {
+  margin: 0 0 clamp(22px, 4vh, 40px);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.v5-eyebrow .v5-pix {
+  color: var(--v5-accent-lit);
+  text-shadow: 0 0 16px rgba(111, 102, 230, 0.5);
+}
+.v5-sep { color: var(--v5-ink-ghost); }
+
+.v5-pix {
+  font-family: var(--font-pixel);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.v5-claim {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.9rem, 11vw, 8rem);
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.v5-claim__l1,
+.v5-claim__l2 { display: block; }
+.v5-claim__l2 {
+  color: transparent;
+  background: linear-gradient(96deg, var(--v5-accent-lit) 0%, var(--v5-accent) 60%, var(--v5-accent-lit) 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: v5-grade 13s ease-in-out infinite;
+}
+@keyframes v5-grade {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.v5-sub {
+  margin: clamp(22px, 4vh, 38px) 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  line-height: 1.34;
+  color: var(--v5-ink);
+  max-width: 32ch;
+}
+.v5-intro {
+  margin: clamp(20px, 3vh, 30px) 0 0;
+  font-size: var(--t-md);
+  line-height: 1.62;
+  color: var(--v5-ink-soft);
+  max-width: 56ch;
+}
+.v5-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 3vw, 30px);
+  margin: clamp(26px, 4vh, 40px) 0 0;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+.v5-meta li { display: inline-flex; align-items: center; gap: 9px; }
+.v5-meta__b { color: var(--v5-accent-lit); font-weight: 600; }
+
+.v5-scrollcue {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: clamp(38px, 7vh, 72px) 0 0;
+  font-size: var(--t-2xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+.v5-scrollcue__line {
+  display: inline-block;
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--v5-accent-lit), transparent);
+  transform-origin: left;
+  animation: v5-cue 2.6s var(--v5-ease) infinite;
+}
+@keyframes v5-cue {
+  0%   { transform: scaleX(0); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* =============================================================================
+   SECTION MARK + SHARED TYPE (the substance stations)
+============================================================================= */
+.v5-mark {
+  margin: 0 0 clamp(16px, 2.5vh, 24px);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--t-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+.v5-mark .v5-pix {
+  font-size: 1.3rem;
+  color: var(--v5-accent-lit);
+  text-shadow: 0 0 14px rgba(111, 102, 230, 0.45);
+}
+
+.v5-h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2rem, 5.6vw, 3.9rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  max-width: 20ch;
+  color: var(--v5-ink);
+}
+.v5-p {
+  margin: clamp(20px, 3vh, 30px) 0 0;
+  font-size: clamp(var(--t-md), 1.4vw, var(--t-lg));
+  line-height: 1.66;
+  color: var(--v5-ink-soft);
+  max-width: 60ch;
+}
+.v5-p--muted { color: var(--v5-ink-faint); font-size: var(--t-md); max-width: 66ch; }
+.v5-cap {
+  margin: clamp(22px, 3vh, 32px) 0 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--v5-accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.02rem, 1.8vw, 1.32rem);
+  line-height: 1.5;
+  color: var(--v5-ink);
+  max-width: 48ch;
+}
+
+/* =============================================================================
+   STATION 02 - THE BENCH
+============================================================================= */
+.v5-lines {
+  margin: clamp(30px, 5vh, 52px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--v5-line);
+  border: 1px solid var(--v5-line);
+}
+.v5-line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "no k" "no d";
+  column-gap: 14px;
+  row-gap: 4px;
+  padding: clamp(16px, 2.4vw, 22px);
+  background: rgba(8, 8, 18, 0.62);
+  transition: background 0.3s var(--v5-ease);
+}
+.v5-line:hover { background: rgba(20, 17, 46, 0.8); }
+.v5-line__n {
+  grid-area: no;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--v5-accent-lit);
+  padding-top: 2px;
+}
+.v5-line__k {
+  grid-area: k;
+  font-weight: 600;
+  font-size: var(--t-md);
+  color: var(--v5-ink);
+}
+.v5-line__d {
+  grid-area: d;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--v5-ink-faint);
+}
+
+.v5-items {
+  margin: clamp(22px, 3vh, 32px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  gap: 1px;
+  background: var(--v5-line);
+  border: 1px solid var(--v5-line);
+}
+.v5-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  background: rgba(7, 7, 17, 0.66);
+  transition: background 0.25s var(--v5-ease);
+}
+.v5-item:hover { background: rgba(54, 44, 202, 0.2); }
+.v5-item__nm { font-size: var(--t-sm); color: var(--v5-ink); }
+.v5-item__who {
+  font-size: var(--t-2xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+
+/* =============================================================================
+   STATION 03 - YOUR FIELD  (the trades tabs)
+============================================================================= */
+.v5-trades { margin: clamp(30px, 5vh, 50px) 0 0; }
+.v5-trades__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: var(--v5-line);
+  border: 1px solid var(--v5-line);
+}
+.v5-trades__tabs li { display: block; }
+.v5-trade {
+  display: block;
+  padding: 11px 16px;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: 0.04em;
+  color: var(--v5-ink-faint);
+  background: rgba(8, 8, 18, 0.62);
+  transition: color 0.2s var(--v5-ease), background 0.2s var(--v5-ease);
+}
+.v5-trade:hover { color: var(--v5-ink); background: rgba(20, 17, 46, 0.78); }
+.v5-trade:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(111, 102, 230, 0.6); }
+.v5-trade.is-on {
+  color: var(--v5-paper);
+  background: var(--v5-accent);
+}
+.v5-trade.is-on:hover { background: var(--v5-accent); }
+
+.v5-trades__body {
+  margin-top: 1px;
+  border: 1px solid var(--v5-line);
+  border-top: 0;
+  background: rgba(7, 7, 16, 0.5);
+}
+.v5-trade-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+.v5-trade-list[hidden] { display: none; }
+.v5-trade-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px clamp(16px, 2.4vw, 22px);
+  border-bottom: 1px dotted var(--v5-line);
+  border-right: 1px dotted var(--v5-line);
+}
+.v5-trade-row:nth-child(2n) { border-right: 0; }
+.v5-trade-row__nm {
+  font-size: var(--t-sm);
+  color: var(--v5-ink);
+  line-height: 1.4;
+}
+.v5-trade-row__who {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: var(--t-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v5-accent-lit);
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   STATION 04 - BAND  (the held line, floats free over the field, centred)
+============================================================================= */
+.v5-panel--band { max-width: 900px; text-align: center; }
+.v5-band { margin: 0; }
+.v5-band__l {
+  display: block;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.3rem, 8vw, 5.6rem);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--v5-ink);
+}
+.v5-band__l--accent {
+  color: transparent;
+  background: linear-gradient(100deg, var(--v5-accent-lit), var(--v5-accent) 55%, var(--v5-accent-lit));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: v5-grade 11s ease-in-out infinite;
+}
+.v5-band__sub {
+  margin: clamp(26px, 4vh, 38px) auto 0;
+  max-width: 46ch;
+  font-size: var(--t-md);
+  line-height: 1.62;
+  color: var(--v5-ink-soft);
+}
+
+/* =============================================================================
+   STATION 05 - WHAT SHIPS FIRST
+============================================================================= */
+.v5-ships {
+  margin: clamp(30px, 5vh, 52px) 0 0;
+  display: grid;
+  gap: 1px;
+  background: var(--v5-line);
+  border: 1px solid var(--v5-line);
+}
+.v5-ship {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "no nm"
+    "no what"
+    "no who";
+  column-gap: clamp(18px, 3vw, 34px);
+  row-gap: 8px;
+  padding: clamp(22px, 3.2vw, 34px);
+  background: rgba(8, 7, 18, 0.62);
+  transition: background 0.35s var(--v5-ease);
+}
+.v5-ship:hover { background: rgba(18, 14, 42, 0.82); }
+.v5-ship__no {
+  grid-area: no;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  line-height: 1;
+  color: var(--v5-accent-lit);
+}
+.v5-ship__nm {
+  grid-area: nm;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--t-xl);
+  line-height: 1.1;
+  color: var(--v5-ink);
+}
+.v5-ship__what {
+  grid-area: what;
+  margin: 0;
+  font-size: var(--t-md);
+  line-height: 1.58;
+  color: var(--v5-ink-soft);
+  max-width: 56ch;
+}
+.v5-ship__who {
+  grid-area: who;
+  font-size: var(--t-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v5-accent-lit);
+}
+
+/* =============================================================================
+   STATION 06 - GET A TOOL  (three ways, quiet and tasteful, then the CTAs)
+============================================================================= */
+.v5-panel--order { padding-bottom: clamp(40px, 6vw, 64px); }
+.v5-cols {
+  margin: clamp(30px, 5vh, 50px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--v5-line);
+  border: 1px solid var(--v5-line);
+}
+.v5-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(20px, 2.6vw, 30px);
+  background: rgba(8, 7, 18, 0.62);
+}
+.v5-col:last-child {
+  background: rgba(54, 44, 202, 0.16);
+  outline: 1px solid var(--v5-line-lit);
+  outline-offset: -1px;
+}
+.v5-col__i {
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--v5-ink-faint);
+}
+.v5-col:last-child .v5-col__i { color: var(--v5-accent-lit); }
+.v5-col__t {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--t-2xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+.v5-col__px {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  line-height: 1;
+  color: var(--v5-ink);
+}
+.v5-col:last-child .v5-col__px { color: var(--v5-accent-lit); }
+.v5-col__d {
+  margin: 4px 0 0;
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: var(--v5-ink-soft);
+}
+
+.v5-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: clamp(34px, 5vh, 52px) 0 0;
+}
+.v5-cta__a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  font-size: var(--t-sm);
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  color: var(--v5-ink-soft);
+  border: 1px solid var(--v5-line);
+  transition: transform 0.25s var(--v5-ease), background 0.25s var(--v5-ease), border-color 0.25s var(--v5-ease), color 0.25s var(--v5-ease), box-shadow 0.25s var(--v5-ease);
+}
+.v5-cta__a:hover { color: var(--v5-ink); border-color: var(--v5-line-lit); transform: translateY(-2px); }
+.v5-cta__a span { display: inline-block; transition: transform 0.25s var(--v5-ease); }
+.v5-cta__a:hover span { transform: translate(3px, -3px); }
+.v5-cta__a--primary {
+  color: var(--v5-paper);
+  background: var(--v5-accent);
+  border-color: transparent;
+}
+.v5-cta__a--primary:hover {
+  color: var(--v5-paper);
+  background: var(--v5-accent-lit);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(54, 44, 202, 0.45);
+}
+
+/* =============================================================================
+   FOOTER  (the resolve)
+============================================================================= */
+.v5-foot {
+  position: relative;
+  z-index: 10;
+  padding: clamp(54px, 9vh, 110px) var(--gutter) clamp(120px, 16vh, 180px);
+}
+.v5-panel--foot {
+  max-width: 980px;
+  padding-top: clamp(28px, 4vh, 44px);
+  border-top: 1px solid var(--v5-line);
+  background:
+    linear-gradient(180deg, rgba(7, 7, 14, 0.0) 0%, rgba(7, 7, 14, 0.55) 100%);
+}
+.v5-foot__sig {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--v5-ink-soft);
+  max-width: 54ch;
+}
+.v5-foot__sig b { color: var(--v5-ink); font-weight: 600; }
+.v5-foot__cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(24px, 6vw, 64px);
+  margin: clamp(22px, 3vh, 32px) 0 0;
+}
+.v5-foot__cols dt {
+  font-size: var(--t-2xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v5-ink-faint);
+}
+.v5-foot__cols dd {
+  margin: 4px 0 0;
+  font-size: var(--t-sm);
+  color: var(--v5-ink-soft);
+}
+.v5-foot__cols a { color: var(--v5-accent-lit); transition: color 0.2s var(--v5-ease); }
+.v5-foot__cols a:hover { color: var(--v5-ink); }
+
+/* =============================================================================
+   RESPONSIVE
+============================================================================= */
+@media (max-width: 860px) {
+  .v5-lines { grid-template-columns: 1fr; }
+  .v5-trade-list { grid-template-columns: 1fr; }
+  .v5-trade-row { border-right: 0; }
+  .v5-cols { grid-template-columns: 1fr; }
+  .v5-station { padding-left: clamp(18px, 5vw, 40px); padding-right: clamp(18px, 5vw, 40px); }
+  .v5-foot { padding-left: clamp(18px, 5vw, 40px); padding-right: clamp(18px, 5vw, 40px); }
+}
+@media (max-width: 480px) {
+  .v5-items { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .v5-trade-row { flex-direction: column; gap: 3px; align-items: flex-start; }
+  .v5-trade-row__who { margin-left: 0; }
+  .v5-ship {
+    grid-template-columns: 1fr;
+    grid-template-areas: "no" "nm" "what" "who";
+    row-gap: 6px;
+  }
+  .v5-toggle__label { display: none; }
+  .v5-toggle { padding: 9px 11px; }
+  .v5-sub { max-width: none; }
+}
+
+/* =============================================================================
+   REDUCED MOTION
+   The field paints one static assembled cloud (handled in JS). Here we still
+   the CSS kinetics: no grain drift, no gradient sweeps, no cue, no dot pulse.
+============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .v5-grain { animation: none; }
+  .v5-claim__l2,
+  .v5-band__l--accent { animation: none; background-position: 30% 50%; }
+  .v5-scrollcue__line { animation: none; opacity: 0.5; transform: scaleX(1); }
+  .v5-toggle[aria-pressed='true'] .v5-toggle__dot { animation: none; }
+  .v5-station {
+    min-height: 0;
+    padding-top: clamp(64px, 10vh, 120px);
+    padding-bottom: clamp(48px, 7vh, 90px);
+  }
+  .v5-station[data-station='0'] { min-height: 84svh; }
+}

@@ -1,0 +1,291 @@
+---
+import VariantBase from '../../layouts/VariantBase.astro';
+import { content } from '../../i18n/content.js';
+import '../../styles/variants/v1.css';
+const c = content.en;
+const base = import.meta.env.BASE_URL;
+
+// Drop-cap split for the how.p1 paragraph: first letter set as a printed initial.
+const p1 = c.how.p1;
+const p1Initial = p1.charAt(0);
+const p1Rest = p1.slice(1);
+
+// Editorial leaders: the bench items become a contents list with dotted leaders.
+const fieldKeys = Object.keys(c.fields.examples);
+---
+<VariantBase
+  n={1}
+  title="Antonin Kindl - small software, made to fit"
+  description="Small custom software by Antonin Kindl, set as a two-ink studio broadsheet. A tool the exact size of your task, alongside the art studio at kindl.work."
+  themeColor="#f4f1ea"
+  bodyClass="v1"
+>
+  <main id="main" class="v1">
+
+    <!-- Paper grain overlay, decorative, sits above the ground below the ink. -->
+    <div class="v1-grain" aria-hidden="true"></div>
+
+    <!-- ============================ MASTHEAD / FOLIO ============================ -->
+    <header class="v1-folio" data-print="0">
+      <div class="v1-folio__mark">
+        <span class="v1-folio__title">tools<b>.</b>kindl<b>.</b>work</span>
+      </div>
+      <div class="v1-folio__meta">
+        <span class="v1-folio__edition pix">No.&nbsp;01</span>
+        <span class="v1-folio__rule" aria-hidden="true"></span>
+        <span class="v1-folio__sub">A studio broadsheet, two inks on paper</span>
+      </div>
+      <nav class="v1-folio__nav" aria-label="Sections">
+        <a href="#how">{c.nav.how}</a>
+        <a href="#bench">{c.nav.bench}</a>
+        <a href="#fields">{c.nav.fields}</a>
+        <a href="#order">{c.nav.order}</a>
+      </nav>
+    </header>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ HERO ============================ -->
+    <section class="v1-hero" aria-labelledby="v1-claim">
+      <canvas class="v1-hero__halftone" data-halftone aria-hidden="true"></canvas>
+
+      <div class="v1-hero__grid">
+        <aside class="v1-hero__margin" aria-hidden="true">
+          <span class="pix v1-hero__drop">A.K.</span>
+          <ul class="v1-hero__notes">
+            {c.hero.meta.map((m, i) => (
+              <li class="v1-marginnote" data-print={String(i + 1)}>
+                <span class="v1-marginnote__tick pix">{String(i + 1).padStart(2, '0')}</span>
+                <span class="v1-marginnote__txt">{m}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <div class="v1-hero__main">
+          <h1 id="v1-claim" class="v1-claim" data-print="1">
+            <span class="v1-claim__line">
+              <span class="v1-claim__ink" data-text={c.hero.claim1}>{c.hero.claim1}</span>
+            </span>
+            <span class="v1-claim__line v1-claim__line--2">
+              <span class="v1-claim__ink v1-claim__ink--accent" data-text={c.hero.claim2}>{c.hero.claim2}</span>
+            </span>
+          </h1>
+
+          <p class="v1-hero__sub" data-print="2">{c.hero.sub}</p>
+          <p class="v1-hero__intro" data-print="3">{c.hero.intro}</p>
+
+          <div class="v1-hero__byline" data-print="4">
+            <span class="pix">est. kindl.work</span>
+            <span class="v1-hero__byline-rule" aria-hidden="true"></span>
+            <span class="muted">small software, made to fit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="v1-hr" aria-hidden="true" />
+
+    <!-- ============================ HOW IT HELPS ============================ -->
+    <section class="v1-how" id="how">
+      <div class="v1-how__grid">
+        <div class="v1-how__head">
+          <span class="v1-smark pix" aria-hidden="true">I</span>
+          <h2 class="v1-h2" data-reveal>{c.how.h}</h2>
+        </div>
+
+        <div class="v1-how__body">
+          <p class="v1-dropcap" data-reveal>
+            <span class="v1-dropcap__letter pix" aria-hidden="true">{p1Initial}</span><span class="v1-dropcap__rest">{p1Rest}</span>
+          </p>
+
+          <blockquote class="v1-pull" data-reveal>
+            <span class="v1-pull__quote">{c.how.cap}</span>
+            <cite class="v1-pull__cite pix">the bench</cite>
+          </blockquote>
+
+          <p class="v1-how__p2 muted" data-reveal>{c.how.p2}</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ THE BENCH (CONTENTS) ============================ -->
+    <section class="v1-bench" id="bench">
+      <div class="v1-bench__head">
+        <span class="v1-smark pix" aria-hidden="true">II</span>
+        <h2 class="v1-h2" data-reveal>{c.bench.h}</h2>
+        <p class="v1-bench__intro muted" data-reveal>{c.bench.intro}</p>
+      </div>
+
+      <div class="v1-bench__lines">
+        {c.bench.lines.map((l, i) => (
+          <article class="v1-line" data-reveal>
+            <span class="v1-line__no pix">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="v1-line__k">{l.k}</h3>
+            <p class="v1-line__d muted">{l.d}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="v1-contents" data-reveal>
+        <span class="v1-contents__label pix">Contents of the bench</span>
+        <ol class="v1-contents__list">
+          {c.bench.items.map((it, i) => (
+            <li class="v1-toc">
+              <span class="v1-toc__no pix">{String(i + 1).padStart(2, '0')}</span>
+              <span class="v1-toc__nm">{it.nm}</span>
+              <span class="v1-toc__leader" aria-hidden="true"></span>
+              <span class="v1-toc__who muted">{it.who}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ YOUR FIELD ============================ -->
+    <section class="v1-fields" id="fields">
+      <div class="v1-fields__head">
+        <span class="v1-smark pix" aria-hidden="true">III</span>
+        <h2 class="v1-h2" data-reveal>{c.fields.h}</h2>
+        <p class="v1-fields__intro muted" data-reveal>{c.fields.intro}</p>
+      </div>
+
+      <div class="v1-fields__tabs" role="tablist" aria-label="Fields" data-fieldtabs>
+        {fieldKeys.map((k, i) => (
+          <button
+            class={'v1-tab' + (i === 0 ? ' is-on' : '')}
+            role="tab"
+            id={`v1-tab-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls={`v1-panel-${i}`}
+            tabindex={i === 0 ? '0' : '-1'}
+            data-tab={String(i)}
+          >
+            <span class="v1-tab__no pix">{String(i + 1).padStart(2, '0')}</span>
+            <span class="v1-tab__nm">{k}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="v1-fields__panels">
+        {fieldKeys.map((k, i) => (
+          <div
+            class={'v1-panel' + (i === 0 ? ' is-on' : '')}
+            role="tabpanel"
+            id={`v1-panel-${i}`}
+            aria-labelledby={`v1-tab-${i}`}
+            hidden={i !== 0}
+          >
+            <ul class="v1-panel__list">
+              {c.fields.examples[k].map(([name, who]) => (
+                <li class="v1-toc v1-toc--field">
+                  <span class="v1-toc__nm">{name}</span>
+                  <span class="v1-toc__leader" aria-hidden="true"></span>
+                  <span class="v1-toc__who muted">{who}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ============================ BAND ============================ -->
+    <section class="v1-band" aria-label="Statement">
+      <div class="v1-band__inner">
+        <p class="v1-band__lines" data-reveal>
+          <span class="v1-band__l1">{c.band.line1}</span>
+          <span class="v1-band__l2">{c.band.line2}</span>
+        </p>
+        <p class="v1-band__sub muted" data-reveal>{c.band.sub}</p>
+      </div>
+    </section>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ WHAT SHIPS FIRST ============================ -->
+    <section class="v1-ships" id="ships">
+      <div class="v1-ships__head">
+        <span class="v1-smark pix" aria-hidden="true">IV</span>
+        <h2 class="v1-h2" data-reveal>{c.ships.h}</h2>
+      </div>
+      <div class="v1-ships__grid">
+        {c.ships.items.map((it) => (
+          <article class="v1-ship" data-reveal>
+            <span class="v1-ship__no pix">{it.no}</span>
+            <h3 class="v1-ship__nm">{it.nm}</h3>
+            <p class="v1-ship__what">{it.what}</p>
+            <span class="v1-ship__who pix">{it.who}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ THREE WAYS / PRICE LIST ============================ -->
+    <section class="v1-order" id="order">
+      <div class="v1-order__head">
+        <span class="v1-smark pix" aria-hidden="true">V</span>
+        <h2 class="v1-h2" data-reveal>{c.order.h}</h2>
+      </div>
+
+      <dl class="v1-pricelist">
+        {c.order.cols.map((col, i) => (
+          <div class="v1-price" data-reveal>
+            <dt class="v1-price__row">
+              <span class="v1-price__no pix">{String(i + 1).padStart(2, '0')}</span>
+              <span class="v1-price__t">{col.t}</span>
+              <span class="v1-price__leader" aria-hidden="true"></span>
+              <span class="v1-price__px">{col.px}</span>
+            </dt>
+            <dd class="v1-price__d muted">{col.d}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="v1-order__cta" data-reveal>
+        <a class="v1-link v1-link--primary" href="https://kindl.work" target="_blank" rel="noopener">
+          <span class="v1-link__txt">{c.order.cta1}</span>
+        </a>
+        <a class="v1-link" href="https://kindl.work" target="_blank" rel="noopener">
+          <span class="v1-link__txt">{c.order.cta2}</span>
+        </a>
+      </div>
+    </section>
+
+    <hr class="v1-hr v1-hr--bold" aria-hidden="true" />
+
+    <!-- ============================ COLOPHON / FOOTER ============================ -->
+    <footer class="v1-colophon">
+      <p class="v1-colophon__sig">
+        <span>{c.footer.sig1}</span><b>{c.footer.sigBold}</b><span>{c.footer.sig2}</span>
+      </p>
+      <div class="v1-colophon__grid">
+        <div class="v1-colophon__cell">
+          <span class="v1-colophon__k pix">{c.footer.studio}</span>
+          <a class="v1-colophon__v v1-link" href="https://kindl.work" target="_blank" rel="noopener">
+            <span class="v1-link__txt">kindl.work</span>
+          </a>
+        </div>
+        <div class="v1-colophon__cell">
+          <span class="v1-colophon__k pix">{c.footer.now}</span>
+          <span class="v1-colophon__v">{c.footer.role}, {c.footer.place}</span>
+        </div>
+        <div class="v1-colophon__cell">
+          <span class="v1-colophon__k pix">Set in</span>
+          <span class="v1-colophon__v">IBM Plex, two inks</span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    import '../../scripts/variants/v1.js';
+  </script>
+</VariantBase>

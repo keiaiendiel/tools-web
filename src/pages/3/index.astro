@@ -1,0 +1,179 @@
+---
+import VariantBase from '../../layouts/VariantBase.astro';
+import { content } from '../../i18n/content.js';
+import '../../styles/variants/v3.css';
+const c = content.en;
+
+const fieldKeys = Object.keys(c.fields.examples);
+---
+<VariantBase
+  n={3}
+  title="Antonin Kindl - small software, made to fit"
+  description="A landing as a parametric composition. Small custom software by Antonin Kindl, built alongside the art studio at kindl.work. Tools the exact size of your task."
+  themeColor="#080711"
+  bodyClass="v3"
+>
+  <!-- Fixed cinematic stage: the composition performs behind the captions. -->
+  <canvas class="v3-stage" data-stage aria-hidden="true"></canvas>
+  <div class="v3-vignette" aria-hidden="true"></div>
+  <div class="v3-grain" aria-hidden="true"></div>
+
+  <!-- Sound toggle, top corner. Muted by default, click to start the score. -->
+  <button class="v3-sound" type="button" data-sound aria-pressed="false" aria-label="Play the generative score">
+    <span class="v3-sound__bars" aria-hidden="true">
+      <i></i><i></i><i></i><i></i>
+    </span>
+    <span class="v3-sound__label" data-sound-label>sound off</span>
+  </button>
+
+  <!-- Movement transport, top-left. Reflects the active movement and progress. -->
+  <div class="v3-transport" aria-hidden="true">
+    <span class="v3-transport__no pix" data-mvmt-no>I</span>
+    <span class="v3-transport__bar"><span class="v3-transport__fill" data-mvmt-fill></span></span>
+    <span class="v3-transport__total mono">of V</span>
+  </div>
+
+  <main id="main" class="v3">
+
+    <!-- ===================== MOVEMENT I - HERO ===================== -->
+    <section class="v3-mv v3-mv--hero" data-mv="0" aria-labelledby="v3-hero-h">
+      <div class="v3-mv__inner">
+        <p class="v3-cue pix" data-cap data-d="0">movement I</p>
+        <h1 class="v3-claim" id="v3-hero-h">
+          <span class="v3-claim__l" data-cap data-d="1">{c.hero.claim1}</span>
+          <span class="v3-claim__l v3-claim__l--accent" data-cap data-d="2">{c.hero.claim2}</span>
+        </h1>
+        <p class="v3-sub" data-cap data-d="3">{c.hero.sub}</p>
+        <p class="v3-intro" data-cap data-d="4">{c.hero.intro}</p>
+        <ul class="v3-meta" data-cap data-d="5">
+          {c.hero.meta.map((m) => <li><span class="v3-meta__dot" aria-hidden="true"></span>{m}</li>)}
+        </ul>
+      </div>
+      <div class="v3-scrollhint" aria-hidden="true">
+        <span>scroll to perform</span>
+        <span class="v3-scrollhint__line"></span>
+      </div>
+    </section>
+
+    <!-- ===================== MOVEMENT II - HOW ===================== -->
+    <section class="v3-mv v3-mv--how" data-mv="1" aria-labelledby="v3-how-h">
+      <div class="v3-mv__inner">
+        <p class="v3-cue pix" data-cap data-d="0">movement II</p>
+        <h2 class="v3-h" id="v3-how-h" data-cap data-d="1">{c.how.h}</h2>
+        <p class="v3-p" data-cap data-d="2">{c.how.p1}</p>
+        <p class="v3-p v3-p--soft" data-cap data-d="3">{c.how.p2}</p>
+        <p class="v3-cap" data-cap data-d="4">{c.how.cap}</p>
+      </div>
+    </section>
+
+    <!-- ===================== MOVEMENT III - THE BENCH ===================== -->
+    <section class="v3-mv v3-mv--bench" data-mv="2" aria-labelledby="v3-bench-h">
+      <div class="v3-mv__inner">
+        <p class="v3-cue pix" data-cap data-d="0">movement III</p>
+        <h2 class="v3-h" id="v3-bench-h" data-cap data-d="1">{c.bench.h}</h2>
+        <p class="v3-p" data-cap data-d="2">{c.bench.intro}</p>
+
+        <ol class="v3-lines" data-cap data-d="3">
+          {c.bench.lines.map((ln, i) => (
+            <li class="v3-line">
+              <span class="v3-line__no pix">{String(i + 1).padStart(2, '0')}</span>
+              <span class="v3-line__k">{ln.k}</span>
+              <span class="v3-line__d">{ln.d}</span>
+            </li>
+          ))}
+        </ol>
+
+        <ul class="v3-bench-grid" data-cap data-d="4">
+          {c.bench.items.map((it) => (
+            <li class="v3-chip">
+              <span class="v3-chip__nm">{it.nm}</span>
+              <span class="v3-chip__who">{it.who}</span>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Fields: the same idea travels across trades. A quiet ribbon. -->
+        <div class="v3-fields" data-cap data-d="5">
+          <p class="v3-fields__h">{c.fields.h}</p>
+          <p class="v3-fields__intro">{c.fields.intro}</p>
+          <ul class="v3-fields__list">
+            {fieldKeys.map((k) => {
+              const rows = c.fields.examples[k];
+              return (
+                <li class="v3-field">
+                  <span class="v3-field__name">{k}</span>
+                  <span class="v3-field__ex">{rows[0][0]}<span class="v3-field__sep"> / </span>{rows[1][0]}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== INTERLUDE - the held chord ===================== -->
+    <section class="v3-mv v3-mv--band" data-mv="3" aria-label="Made to fit">
+      <div class="v3-mv__inner v3-mv__inner--center">
+        <p class="v3-band__line" data-cap data-d="0">{c.band.line1}</p>
+        <p class="v3-band__line v3-band__line--accent" data-cap data-d="1">{c.band.line2}</p>
+        <p class="v3-band__sub" data-cap data-d="2">{c.band.sub}</p>
+      </div>
+    </section>
+
+    <!-- ===================== MOVEMENT IV - WHAT SHIPS ===================== -->
+    <section class="v3-mv v3-mv--ships" data-mv="4" aria-labelledby="v3-ships-h">
+      <div class="v3-mv__inner">
+        <p class="v3-cue pix" data-cap data-d="0">movement IV</p>
+        <h2 class="v3-h" id="v3-ships-h" data-cap data-d="1">{c.ships.h}</h2>
+        <ol class="v3-ships" data-cap data-d="2">
+          {c.ships.items.map((it) => (
+            <li class="v3-ship">
+              <span class="v3-ship__no pix">{it.no}</span>
+              <div class="v3-ship__body">
+                <h3 class="v3-ship__nm">{it.nm}</h3>
+                <p class="v3-ship__what">{it.what}</p>
+                <span class="v3-ship__who">{it.who}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== MOVEMENT V - THE THREE WAYS ===================== -->
+    <section class="v3-mv v3-mv--order" data-mv="5" aria-labelledby="v3-order-h">
+      <div class="v3-mv__inner">
+        <p class="v3-cue pix" data-cap data-d="0">movement V</p>
+        <h2 class="v3-h" id="v3-order-h" data-cap data-d="1">{c.order.h}</h2>
+        <ul class="v3-ways" data-cap data-d="2">
+          {c.order.cols.map((col, i) => (
+            <li class={'v3-way' + (i === 2 ? ' v3-way--build' : '')}>
+              <span class="v3-way__t">{col.t}</span>
+              <span class="v3-way__px pix">{col.px}</span>
+              <span class="v3-way__d">{col.d}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="v3-cta" data-cap data-d="3">
+          <a class="v3-cta__primary" href="https://kindl.work" target="_blank" rel="noopener">{c.order.cta1}<span class="v3-cta__arrow" aria-hidden="true"> &rarr;</span></a>
+          <a class="v3-cta__ghost" href="https://kindl.work" target="_blank" rel="noopener">{c.order.cta2}<span aria-hidden="true"> &nearr;</span></a>
+        </div>
+      </div>
+
+      <footer class="v3-footer" data-cap data-d="4">
+        <p class="v3-footer__sig">
+          {c.footer.sig1}<b>{c.footer.sigBold}</b>{c.footer.sig2}
+        </p>
+        <dl class="v3-footer__meta">
+          <div><dt>{c.footer.studio}</dt><dd><a href="https://kindl.work" target="_blank" rel="noopener">kindl.work &nearr;</a></dd></div>
+          <div><dt>{c.footer.now}</dt><dd>{c.footer.role}, {c.footer.place}</dd></div>
+        </dl>
+      </footer>
+    </section>
+
+  </main>
+
+  <script>
+    import '../../scripts/variants/v3.js';
+  </script>
+</VariantBase>
