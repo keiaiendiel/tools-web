@@ -63,7 +63,7 @@
   --t-2xl: 2.0625rem;  /* 33 */
   --t-3xl: 2.75rem;    /* 44 */
   --t-4xl: 3.75rem;    /* 60 */
-  --t-5xl: clamp(3rem, 9vw, 7.5rem);   /* hero claim */
+  --t-5xl: clamp(2.75rem, 8vw, 6.5rem);   /* hero claim */
 
   --lh-tight: 1.02;
   --lh-snug:  1.16;
