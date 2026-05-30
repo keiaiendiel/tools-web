@@ -24,7 +24,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      # esbuild + sharp ship prebuilt binaries; their postinstall scripts are
+      # harmless. pnpm escalates "ignored build scripts" to a hard error in CI,
+      # so allow them to run.
+      - run: pnpm install --no-frozen-lockfile --config.dangerouslyAllowAllBuilds=true
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3
         with:
