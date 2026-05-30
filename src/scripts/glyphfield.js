@@ -85,7 +85,7 @@ export function initGlyphField(canvas) {
     if (maxCol < minCol) return null;
     const rowStart = mobile ? Math.floor(rows * 0.5) : 1;
     const rowSpan = Math.max(1, rows - rowStart - 1);
-    for (let tries = 0; tries < 24; tries++) {
+    for (let tries = 0; tries < 32; tries++) {
       const col = minCol + Math.floor(Math.random() * (maxCol - minCol + 1));
       const row = rowStart + Math.floor(Math.random() * rowSpan);
       let clear = true;
@@ -102,18 +102,18 @@ export function initGlyphField(canvas) {
   }
 
   function spawnWord() {
-    if (words.length >= (mobile ? 3 : 4)) return;
+    if (words.length >= (mobile ? 4 : 6)) return;
     const text = WORDS[(Math.random() * WORDS.length) | 0];
     const spot = placeWord(text.length);
     if (!spot) return;
-    // At most one accent word visible at a time.
-    const accentTaken = words.some((w) => w.accent);
+    // Up to two accent words at once, for a livelier field.
+    const accentCount = words.filter((w) => w.accent).length;
     words.push({
       text,
       col: spot.col,
       row: spot.row,
       born: t,
-      accent: !accentTaken && Math.random() < 0.34,
+      accent: accentCount < 2 && Math.random() < 0.4,
     });
   }
 
@@ -121,7 +121,7 @@ export function initGlyphField(canvas) {
   // 500ms fade in, 2200ms hold, 600ms dissolve. Returns {decode, ink} where
   // decode 0..1 is how "locked" the letters are and ink 0..1 is darkness.
   function wordPhase(age) {
-    const IN = 0.45, HOLD = 2.8, OUT = 0.7;
+    const IN = 0.4, HOLD = 2.4, OUT = 0.6;
     if (age < IN) { const p = age / IN; return { decode: p, ink: p, alive: true }; }
     if (age < IN + HOLD) return { decode: 1, ink: 1, alive: true };
     if (age < IN + HOLD + OUT) {
@@ -143,7 +143,7 @@ export function initGlyphField(canvas) {
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
 
-    const driftT = t * 0.18;
+    const driftT = t * 0.26;
 
     // First pass: idle field.
     for (let r = 0; r < rows; r++) {
@@ -254,7 +254,7 @@ export function initGlyphField(canvas) {
       // wake decays toward calm over ~0.8s
       wake = Math.max(0, wake - sec / 0.8);
       // spawn cadence: a new word attempt every ~2.4s, staggered
-      if (t - lastSpawn > 1.6) { lastSpawn = t; spawnWord(); }
+      if (t - lastSpawn > 1.0) { lastSpawn = t; spawnWord(); }
       draw();
     }, { fps: 30 });
   });

@@ -36,6 +36,10 @@ export const WORDS = [
   'PLOT', 'GEN', 'STAGE', 'PATCH', 'OSC', 'POSE', 'BOM', 'WIRING', 'RIDER',
   'CALC', 'EDICE', 'TRIAGE', 'CODEX', 'FORGE', 'PRESET', 'CUE', 'SACN',
   'PIXEL', 'MAP', 'IDENTITY', 'POSTER', 'INVOICE', 'CATALOG', 'TOOL',
+  'OKO', 'MIDI', 'DMX', 'LIDAR', 'MESH', 'GRID', 'SIGNAL', 'SENSOR',
+  'LAYOUT', 'RENDER', 'MASK', 'FLOW', 'TRACE', 'LOOP', 'SHADER', 'VERTEX',
+  'GLYPH', 'MOTION', 'VECTOR', 'RASTER', 'HUE', 'CUSTOM', 'FIT', 'BUILD',
+  'TUNE', 'SCAN', 'PROBE', 'PARSE', 'EXPORT', 'DRAFT', 'SHIP',
 ];
 
 /* ---------- Seeded randomness ----------------------------------------------
