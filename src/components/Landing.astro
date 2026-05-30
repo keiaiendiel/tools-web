@@ -1,0 +1,211 @@
+---
+import { content } from '../i18n/content.js';
+
+interface Props { lang: 'en' | 'cs'; }
+const { lang } = Astro.props;
+const c = content[lang];
+
+const base = import.meta.env.BASE_URL;          // '/tools-web/' on Pages, '/' on apex
+const enUrl = base;
+const csUrl = base + 'cs';
+const switchUrl = lang === 'en' ? csUrl : enUrl; // header link goes to the other one
+
+const exKeys = Object.keys(c.fields.examples);
+const firstKey = exKeys[0];
+---
+<header class="topbar">
+  <a class="topbar__mark" href={lang === 'cs' ? csUrl : enUrl} aria-label="tools.kindl.work, home">
+    <span class="wm">tools<b>.</b>kindl<b>.</b>work</span>
+  </a>
+  <div class="topbar__right">
+    <nav class="topbar__nav">
+      <a href="#how">{c.nav.how}</a>
+      <a href="#bench">{c.nav.bench}</a>
+      <a href="#fields">{c.nav.fields}</a>
+      <a href="#order">{c.nav.order}</a>
+      <a href="https://kindl.work">kindl.work ↗</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <a href={enUrl} class={lang === 'en' ? 'on' : ''} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+      <span aria-hidden="true">/</span>
+      <a href={csUrl} class={lang === 'cs' ? 'on' : ''} aria-current={lang === 'cs' ? 'true' : undefined}>CS</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <canvas class="hero__field" data-glyphfield aria-hidden="true"></canvas>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap hero__inner">
+      <h1 class="display hero__claim">
+        {c.hero.claim1}
+        <span class="ln2">{c.hero.claim2}</span>
+      </h1>
+      <p class="hero__sub">{c.hero.sub}</p>
+      <p class="hero__intro">{c.hero.intro}</p>
+      <div class="hero__meta">
+        {c.hero.meta.map((m) => <span>{m}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HOW IT HELPS ============================ -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="lead-row">
+        <div>
+          <h2 class="h2" data-reveal>{c.how.h}</h2>
+          <p class="body lede" data-reveal set:html={c.how.p1} style="margin-top: var(--s-5);"></p>
+          <p class="body muted" data-reveal set:html={c.how.p2} style="margin-top: var(--s-5);"></p>
+        </div>
+        <figure class="gendemo" data-reveal>
+          <div class="gendemo__stage">
+            <canvas data-gendemo aria-hidden="true"></canvas>
+          </div>
+          <div class="gendemo__bar">
+            <span class="lbl">{c.how.barLabel}</span>
+            <span class="hint" data-hint data-fine={c.how.hintFine} data-coarse={c.how.hintCoarse}>{c.how.hintFine}</span>
+          </div>
+          <figcaption class="gendemo__cap">{c.how.cap}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ THE BENCH ============================ -->
+  <section class="section machine" id="bench">
+    <div class="wrap">
+      <h2 class="h2" data-reveal>{c.bench.h}</h2>
+      <p class="body lede muted" data-reveal style="margin-top: var(--s-5); max-width: 56ch;">{c.bench.intro}</p>
+
+      <div class="grid grid--2" data-reveal style="margin-top: var(--s-7); gap: var(--s-5);">
+        {c.bench.lines.map((l) => (
+          <div style="border-top: 2px solid var(--accent); padding-top: var(--s-3);">
+            <h3 class="h3" style="font-size: var(--t-lg);">{l.k}</h3>
+            <p class="muted" style="margin-top: var(--s-2); font-size: var(--t-sm);">{l.d}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="machine__stream" data-reveal>
+        <ul class="lines" data-catalog>
+          {c.bench.items.map((b) => (
+            <li data-nm={b.nm}><span class="nm">{b.nm}</span><span class="muted">{b.who}</span></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ EXAMPLES EXPLORER ============================ -->
+  <section class="section" id="fields">
+    <div class="wrap">
+      <h2 class="h2" data-reveal>{c.fields.h}</h2>
+      <p class="body lede" data-reveal style="margin-top: var(--s-5); max-width: 54ch;">{c.fields.intro}</p>
+
+      <div data-examples data-reveal style="margin-top: var(--s-7);">
+        <div class="ex-chips" data-examples-chips role="tablist" aria-label={c.fields.h}>
+          {exKeys.map((k, i) => (
+            <button class="ex-chip" data-industry={k} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>{k}</button>
+          ))}
+        </div>
+        <ul class="ex-list" data-examples-list>
+          {c.fields.examples[firstKey].map((t) => (
+            <li data-nm={t[0]}><span class="nm">{t[0]}</span><span class="who">{t[1]}</span></li>
+          ))}
+        </ul>
+      </div>
+      <script type="application/json" data-examples-data set:html={JSON.stringify(c.fields.examples)} />
+    </div>
+  </section>
+
+  <!-- ============================ FLOWFIELD BAND ============================ -->
+  <section class="band" aria-label="Studio note">
+    <canvas data-flowfield aria-hidden="true"></canvas>
+    <div class="wrap band__inner">
+      <p class="band__line">{c.band.line1} <b>{c.band.line2}</b></p>
+      <p class="band__sub">{c.band.sub}</p>
+    </div>
+  </section>
+
+  <!-- ============================ FIRST THREE SHIPS ============================ -->
+  <section class="section section--tight" id="ships">
+    <div class="wrap">
+      <h2 class="h2" data-reveal style="margin-bottom: var(--s-6);">{c.ships.h}</h2>
+      <div class="ships" data-reveal>
+        {c.ships.items.map((s) => (
+          <article class="ship">
+            <span class="ship__no pix">{s.no}</span>
+            <h3 class="ship__name">{s.nm}</h3>
+            <p class="ship__what">{s.what}</p>
+            <span class="ship__who">{s.who}</span>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ GET A TOOL ============================ -->
+  <section class="section" id="order">
+    <div class="wrap">
+      <h2 class="h2" data-reveal style="margin-bottom: var(--s-7);">{c.order.h}</h2>
+      <div class="menu" data-reveal>
+        {c.order.cols.map((col) => (
+          <div class="menu__col">
+            <h4>{col.t} <span class="px">{col.px}</span></h4>
+            <p>{col.d}</p>
+          </div>
+        ))}
+      </div>
+      <div class="row" data-reveal style="margin-top: var(--s-7);">
+        <a class="pill pill--accent" href="mailto:a.kindl@pm.me?subject=A%20tool">{c.order.cta1}</a>
+        <a class="pill" href="https://kindl.work">{c.order.cta2}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="foot">
+    <canvas class="foot__amb" data-ambient-foot aria-hidden="true"></canvas>
+    <div class="wrap" style="position: relative; z-index: 2;">
+      <div class="foot__grid">
+        <p class="foot__sig">{c.footer.sig1}<b>{c.footer.sigBold}</b>{c.footer.sig2}</p>
+        <div>
+          <h5>{c.footer.studio}</h5>
+          <ul>
+            <li><a href="https://kindl.work">kindl.work ↗</a></li>
+            <li><a href="https://see.kindl.work">see.kindl.work ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>{c.footer.now}</h5>
+          <ul>
+            <li><a href="mailto:a.kindl@pm.me">a.kindl@pm.me</a></li>
+            <li class="muted">{c.footer.role}</li>
+            <li class="muted">{c.footer.place}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+{/* Touch-aware generator hint: "drag" reads better than "move" on a phone. */}
+<script is:inline>
+  (function () {
+    if (window.matchMedia && matchMedia('(pointer: coarse)').matches) {
+      document.querySelectorAll('[data-hint]').forEach(function (el) {
+        if (el.dataset.coarse) el.textContent = el.dataset.coarse;
+      });
+    }
+  }());
+</script>
+
+<script>
+  import { boot } from '../scripts/main.js';
+  boot();
+</script>

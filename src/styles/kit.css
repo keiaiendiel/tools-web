@@ -29,8 +29,13 @@
 .topbar a:hover { color: var(--accent); }
 .topbar__mark { font-weight: 600; letter-spacing: 0.04em; }
 .topbar__mark b { color: var(--accent); font-weight: 600; }
+.topbar__right { display: flex; align-items: center; gap: var(--s-5); }
 .topbar__nav { display: flex; gap: var(--s-5); }
 .topbar__nav a { color: var(--fg-muted); }
+.lang { display: flex; align-items: center; gap: 6px; font-size: var(--t-xs); letter-spacing: var(--tr-mono); color: var(--fg-faint); }
+.lang a { color: var(--fg-faint); }
+.lang a:hover { color: var(--fg); }
+.lang a.on { color: var(--accent); font-weight: 600; }
 @media (max-width: 680px) { .topbar__nav { display: none; } }
 
 /* ---------- Hero ---------- */
@@ -190,8 +195,10 @@
 .gendemo { border: 1px solid var(--rule); background: var(--paper-2); padding: var(--s-4); }
 .gendemo__stage { position: relative; }
 .gendemo canvas { width: 100%; height: 300px; cursor: crosshair; touch-action: none; display: block; }
-.gendemo__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); margin-top: var(--s-3); font-size: var(--t-xs); color: var(--fg-muted); }
-.gendemo__bar .hint { color: var(--accent); }
+.gendemo__bar { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px var(--s-3); margin-top: var(--s-3); font-size: var(--t-xs); color: var(--fg-muted); }
+.gendemo__bar .lbl { white-space: nowrap; }
+.gendemo__bar .hint { color: var(--accent); white-space: nowrap; margin-left: auto; }
+@media (max-width: 480px) { .gendemo__bar { font-size: var(--t-2xs); } }
 .gendemo__cap { margin-top: var(--s-3); font-size: var(--t-xs); color: var(--fg-muted); max-width: 52ch; }
 @media (max-width: 860px) { .gendemo canvas { height: 240px; } }
 

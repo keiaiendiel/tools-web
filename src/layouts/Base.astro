@@ -5,16 +5,20 @@ import '../styles/kit.css';
 interface Props {
   title?: string;
   description?: string;
+  lang?: 'en' | 'cs';
 }
 const {
-  title = 'Antonín Kindl — small software, made by hand',
+  title = 'Antonín Kindl - small software, made to measure',
   description = 'Small custom software, built by Antonín Kindl alongside the art studio at kindl.work. Some tools you can use right now; some I build to order: parametric generators, stage and event calculators, computer-vision and installation utilities.',
+  lang = 'en',
 } = Astro.props;
 
 const site = Astro.site?.toString().replace(/\/$/, '') ?? 'https://tools.kindl.work';
 const base = import.meta.env.BASE_URL; // '/tools-web/' on Pages, '/' on custom domain
 const canonical = `${site}${Astro.url.pathname}`;
 const homeUrl = `${site}${base}`;
+const csUrl = `${site}${base}cs`;
+const ogLocale = lang === 'cs' ? 'cs_CZ' : 'en_US';
 
 // Lean JSON-LD: a Person who is also the maker, with a knowsAbout list that
 // doubles as long-tail SEO ("design engineer", the tool categories).
@@ -34,19 +38,23 @@ const jsonLd = {
 };
 ---
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={homeUrl} />
+    <link rel="alternate" hreflang="cs" href={csUrl} />
+    <link rel="alternate" hreflang="x-default" href={homeUrl} />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content="tools.kindl.work" />
+    <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href={base + 'favicon.svg'} type="image/svg+xml" />
