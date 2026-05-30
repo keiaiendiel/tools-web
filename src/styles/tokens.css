@@ -1,0 +1,186 @@
+/* =============================================================================
+   tokens.css — tools.kindl.work foundations
+   -----------------------------------------------------------------------------
+   Ink on paper. IBM Plex Mono carries the page (the field, the UI, most copy);
+   IBM Plex Serif is the warm display voice for the claim. One accent: #362cca,
+   the studio blue. Print-restraint: sharp corners, hairline rules, no shadows
+   doing decorative work, no gradients in chrome.
+============================================================================= */
+
+/* DR Krapka Round — pixel variant from the studio vault. Used sparingly as a
+   display accent (wordmark, section marks, a couple of pixel moments). Path is
+   hard-coded to the Pages base; see astro.config.mjs note. */
+@font-face {
+  font-family: 'Krapka';
+  src: url('/tools-web/fonts/krapka/krapka-pixel.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Type ---------- */
+  --font-mono:  'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --font-sans:  'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-pixel: 'Krapka', 'IBM Plex Mono', monospace;
+
+  /* ---------- Palette: warm paper, warm ink ---------- */
+  --paper:      #f4f1ea;   /* page ground */
+  --paper-2:    #ebe7dd;   /* panel / inset */
+  --paper-3:    #e2ddd0;   /* hairline fills */
+  --ink:        #17150f;   /* near-black, warm */
+  --ink-soft:   #5f5a4d;   /* secondary copy */
+  --ink-faint:  #b9b3a3;   /* idle glyph field, captions */
+  --ink-ghost:  #d7d1c2;   /* faintest field ink */
+
+  --accent:      #362cca;  /* studio blue */
+  --accent-deep: #241c8e;  /* pressed / link visited */
+  --accent-soft: rgba(54, 44, 202, 0.12);
+  --accent-line: rgba(54, 44, 202, 0.30);
+
+  /* Inverse ground for the one dark "machine room" section. */
+  --night:      #100f14;   /* near-black with a blue cast */
+  --night-2:    #17161d;
+  --night-ink:  #e9e7df;   /* paper-coloured text on night */
+  --night-faint:#3a3947;   /* faint field on night */
+
+  /* ---------- Semantic ---------- */
+  --bg:        var(--paper);
+  --fg:        var(--ink);
+  --fg-muted:  var(--ink-soft);
+  --fg-faint:  var(--ink-faint);
+  --rule:      rgba(23, 21, 15, 0.16);
+  --rule-bold: rgba(23, 21, 15, 0.42);
+
+  /* ---------- Type scale (1.26 modular, 16px root) ---------- */
+  --t-2xs: 0.6875rem;  /* 11 */
+  --t-xs:  0.75rem;    /* 12 */
+  --t-sm:  0.8125rem;  /* 13 */
+  --t-md:  0.9375rem;  /* 15 */
+  --t-lg:  1.125rem;   /* 18 */
+  --t-xl:  1.5rem;     /* 24 */
+  --t-2xl: 2.0625rem;  /* 33 */
+  --t-3xl: 2.75rem;    /* 44 */
+  --t-4xl: 3.75rem;    /* 60 */
+  --t-5xl: clamp(3rem, 9vw, 7.5rem);   /* hero claim */
+
+  --lh-tight: 1.02;
+  --lh-snug:  1.16;
+  --lh-norm:  1.45;
+  --lh-loose: 1.62;
+
+  --tr-tight: -0.02em;
+  --tr-mono:  0.01em;
+  --tr-label: 0.22em;   /* eyebrows, wide-spaced labels */
+
+  /* ---------- Space ---------- */
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 24px;  --s-6: 32px;  --s-7: 48px;  --s-8: 64px;
+  --s-9: 96px;  --s-10: 128px; --s-11: 192px;
+
+  /* ---------- Layout ---------- */
+  --container: 1280px;
+  --measure: 64ch;
+  --gutter: clamp(20px, 5vw, 80px);
+
+  /* ---------- Motion ---------- */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --dur-1: 140ms;
+  --dur-2: 280ms;
+  --dur-3: 600ms;
+}
+
+/* =============================================================================
+   Reset
+============================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  background: var(--paper);
+  color: var(--fg);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  line-height: var(--lh-norm);
+  letter-spacing: var(--tr-mono);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, svg, canvas { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+::selection { background: var(--accent); color: var(--paper); }
+
+/* =============================================================================
+   Type roles
+============================================================================= */
+.display {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--t-5xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight);
+  text-wrap: balance;
+}
+.h2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 3.5vw, var(--t-3xl));
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+  text-wrap: balance;
+}
+.h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--t-xl);
+  line-height: var(--lh-snug);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.lede {
+  font-size: var(--t-lg);
+  line-height: var(--lh-loose);
+  color: var(--fg);
+  max-width: var(--measure);
+}
+.body { max-width: var(--measure); color: var(--fg); }
+.muted { color: var(--fg-muted); }
+.faint { color: var(--fg-faint); }
+.mono  { font-family: var(--font-mono); }
+.serif { font-family: var(--font-serif); }
+.pix   { font-family: var(--font-pixel); letter-spacing: 0; }
+.tnum  { font-variant-numeric: tabular-nums; }
+
+/* Section mark: a small Krapka-pixel number that replaces the old spaced-uppercase
+   eyebrow. Quiet, with a little character, not a template label. */
+.smark {
+  font-family: var(--font-pixel);
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--accent);
+  display: inline-block;
+  margin-bottom: var(--s-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

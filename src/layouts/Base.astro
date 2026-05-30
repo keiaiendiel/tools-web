@@ -1,0 +1,86 @@
+---
+import '../styles/tokens.css';
+import '../styles/kit.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'Antonín Kindl — small software, made by hand',
+  description = 'Small custom software, built by Antonín Kindl alongside the art studio at kindl.work. Some tools you can use right now; some I build to order: parametric generators, stage and event calculators, computer-vision and installation utilities.',
+} = Astro.props;
+
+const site = Astro.site?.toString().replace(/\/$/, '') ?? 'https://tools.kindl.work';
+const base = import.meta.env.BASE_URL; // '/tools-web/' on Pages, '/' on custom domain
+const canonical = `${site}${Astro.url.pathname}`;
+const homeUrl = `${site}${base}`;
+
+// Lean JSON-LD: a Person who is also the maker, with a knowsAbout list that
+// doubles as long-tail SEO ("design engineer", the tool categories).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Antonín Kindl',
+  alternateName: 'kindl.work',
+  jobTitle: 'Design engineer',
+  url: homeUrl,
+  sameAs: ['https://kindl.work'],
+  knowsAbout: [
+    'parametric generators', 'generative design tools', 'stage plot and rider tools',
+    'event and venue layout calculators', 'computer vision utilities', 'TouchDesigner tools',
+    'creative coding', 'new media installation',
+  ],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="tools.kindl.work" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href={base + 'favicon.svg'} type="image/svg+xml" />
+
+    {/* IBM Plex Mono + Serif + Sans. Preconnect for a clean first paint. */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500&display=swap"
+    />
+
+    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+
+    {/* Reveal-on-scroll: one shared observer for [data-reveal]. */}
+    <script is:inline>
+      (function () {
+        var els = document.querySelectorAll('[data-reveal]');
+        if (!('IntersectionObserver' in window) || !els.length) {
+          els.forEach(function (e) { e.classList.add('is-in'); });
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+        els.forEach(function (e) { io.observe(e); });
+      }());
+    </script>
+  </body>
+</html>
