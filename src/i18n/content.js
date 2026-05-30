@@ -15,7 +15,7 @@
 export const content = {
   en: {
     htmlLang: 'en',
-    title: 'Antonín Kindl - small software, made to measure',
+    title: 'Antonín Kindl - small software, made to fit',
     description: 'Small custom software, built by Antonín Kindl alongside the art studio at kindl.work. Some tools you can use right now; some I build to order: parametric generators, stage and event calculators, computer-vision and installation utilities.',
     nav: { how: 'how it helps', bench: 'the bench', fields: 'your field', order: 'get a tool' },
     hero: {
@@ -80,7 +80,7 @@ export const content = {
         'Admin': [['Custom invoice generator', 'studios, firms'], ['Quote generator', 'sales, studio'], ['CSV report dashboard', 'management'], ['Contract generator', 'HR, legal'], ['Format converter', 'accounting'], ['Org-chart generator', 'firms']],
       },
     },
-    band: { line1: 'Made to measure,', line2: 'one tool at a time.', sub: 'No platform, no subscription, no account. A file you open, or a tool I build and hand you.' },
+    band: { line1: 'Made to fit,', line2: 'one tool at a time.', sub: 'No platform, no subscription, no account. A file you open, or a tool I build and hand you.' },
     ships: {
       h: 'What ships first.',
       items: [
@@ -98,7 +98,7 @@ export const content = {
       ],
       cta1: 'Start a tool', cta2: 'The art studio',
     },
-    footer: { sig1: 'Antonín Kindl. ', sigBold: 'Small software, made to measure.', sig2: ' Alongside the art studio at kindl.work.', studio: 'Studio', now: 'Now', role: 'design engineer', place: 'Prague' },
+    footer: { sig1: 'Antonín Kindl. ', sigBold: 'Small software, made to fit.', sig2: ' Alongside the art studio at kindl.work.', studio: 'Studio', now: 'Now', role: 'design engineer', place: 'Prague' },
   },
 
   cs: {
