@@ -50,6 +50,38 @@ export function initGlyphField(canvas) {
   // a glyph with heavy ink coverage reads dark even at a faint colour.
   const CHURN = GLYPHS.noise.filter((g) => !'#░▒▓'.includes(g));
 
+  // Text keep-out. Grid rects covering the hero's real headline, paragraph and
+  // buttons. Settled WORDS never spawn or render inside them, so the readable
+  // copy is never sat under a decoded word (the worst on a phone, where the copy
+  // fills the screen). The faint idle texture still drifts everywhere; only the
+  // words are held out. Remeasured on resize and after the webfont swaps in.
+  let keepOut = [];
+  function measureKeepOut() {
+    const hero = canvas.closest('.hero');
+    if (!hero || !cw || !ch) { keepOut = []; return; }
+    const cr = canvas.getBoundingClientRect();
+    const padX = cw, padY = ch * 0.75;     // a little breathing room around the copy
+    const next = [];
+    hero.querySelectorAll('.hero__claim, .hero__sub, .hero__intro, .hero__cta').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      next.push({
+        c0: Math.floor((r.left   - cr.left - originX - padX) / cw),
+        c1: Math.ceil( (r.right  - cr.left - originX + padX) / cw),
+        r0: Math.floor((r.top    - cr.top  - originY - padY) / ch),
+        r1: Math.ceil( (r.bottom - cr.top  - originY + padY) / ch),
+      });
+    });
+    keepOut = next;
+  }
+  // True if a word of length n at (col,row) would touch any keep-out rect.
+  function hitsKeepOut(col, row, n) {
+    for (const k of keepOut) {
+      if (row >= k.r0 && row <= k.r1 && col <= k.c1 && col + n - 1 >= k.c0) return true;
+    }
+    return false;
+  }
+
   // Grab our own 2D context up front. fitCanvas runs resize()/onResize
   // synchronously, so a ctx destructured from its return value would be in the
   // temporal dead zone when onResize first fires. This const is initialized first.
@@ -71,6 +103,7 @@ export function initGlyphField(canvas) {
       mobile = cssW < 720;    // on phones the headline is full width
       words.length = 0;       // stale placements no longer fit the grid
       lastSpawn = 0;
+      measureKeepOut();       // the copy reflowed; refresh the no-word zone
     },
   });
 
@@ -95,6 +128,7 @@ export function initGlyphField(canvas) {
     for (let tries = 0; tries < 32; tries++) {
       const col = minCol + Math.floor(Math.random() * (maxCol - minCol + 1));
       const row = rowStart + Math.floor(Math.random() * rowSpan);
+      if (hitsKeepOut(col, row, n)) continue;   // never under the real copy / buttons
       let clear = true;
       for (const w of words) {
         if (Math.abs(w.row - row) > 1) continue;
@@ -249,6 +283,9 @@ export function initGlyphField(canvas) {
       const w = words[i];
       const ph = wordPhase(t - w.born);
       if (!ph.alive) { words.splice(i, 1); continue; }
+      // If a late reflow (webfont swap, resize) moved the copy under this word,
+      // drop it rather than render a word over the text.
+      if (hitsKeepOut(w.col, w.row, w.text.length)) { words.splice(i, 1); continue; }
       const cy = originY + w.row * ch + ch / 2;
       for (let k = 0; k < w.text.length; k++) {
         const cx = originX + (w.col + k) * cw;
@@ -304,18 +341,28 @@ export function initGlyphField(canvas) {
 
   // --- Reduced motion: one settled frame, no loop ---------------------------
   if (prefersReducedMotion()) {
-    t = 4.2;                 // a moment where idle texture is present
-    spawnWord(); spawnWord(); spawnWord(); spawnWord();
-    // force one of them to be accent + mid-hold so the frame reads finished
-    for (const w of words) { w.born = t - 1.4; }
-    if (words.length && !words.some((w) => w.accent)) words[0].accent = true;
-    draw();
+    const settle = () => {
+      measureKeepOut();
+      words.length = 0;
+      t = 4.2;                 // a moment where idle texture is present
+      spawnWord(); spawnWord(); spawnWord(); spawnWord();
+      // force one of them to be accent + mid-hold so the frame reads finished
+      for (const w of words) { w.born = t - 1.4; }
+      if (words.length && !words.some((w) => w.accent)) words[0].accent = true;
+      draw();
+    };
+    settle();
+    // The webfont reflows the copy after first paint; re-settle so words clear it.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
     return () => { dispose(); };
   }
 
   // --- Animated: gate startup on visibility ---------------------------------
   onVisible(canvas, () => {
     wirePointer();
+    measureKeepOut();
+    // The hero copy reflows when the webfont swaps in; re-measure so words clear it.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureKeepOut);
     stop = rafLoop((dt) => {
       const sec = dt / 1000;
       t += sec;
