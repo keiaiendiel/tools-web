@@ -1,5 +1,6 @@
 ---
 import { content } from '../i18n/content.js';
+import Inquiry from './Inquiry.astro';
 
 interface Props { lang: 'en' | 'cs'; }
 const { lang } = Astro.props;
@@ -46,8 +47,9 @@ const firstKey = exKeys[0];
       </h1>
       <p class="hero__sub">{c.hero.sub}</p>
       <p class="hero__intro">{c.hero.intro}</p>
-      <div class="hero__meta">
-        {c.hero.meta.map((m) => <span>{m}</span>)}
+      <div class="hero__cta">
+        <button type="button" class="pill pill--accent" data-open-inquiry>{c.order.cta1}</button>
+        <a class="pill" href="#bench">{c.nav.bench}</a>
       </div>
     </div>
   </section>
@@ -161,7 +163,7 @@ const firstKey = exKeys[0];
         ))}
       </div>
       <div class="row" data-reveal style="margin-top: var(--s-7);">
-        <a class="pill pill--accent" href="mailto:a.kindl@pm.me?subject=A%20tool">{c.order.cta1}</a>
+        <button type="button" class="pill pill--accent" data-open-inquiry>{c.order.cta1}</button>
         <a class="pill" href="https://kindl.work">{c.order.cta2}</a>
       </div>
     </div>
@@ -191,6 +193,8 @@ const firstKey = exKeys[0];
       </div>
     </div>
   </footer>
+
+  <Inquiry lang={lang} />
 
 </main>
 

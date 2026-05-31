@@ -144,51 +144,60 @@ export function initGlyphField(canvas) {
     ctx.textAlign = 'left';
 
     const driftT = t * 0.26;
+    // Subtle "develops in" reveal: the field fades up over the first ~1.1s.
+    const intro = Math.min(1, t / 1.1);
 
-    // First pass: idle field.
+    // Cells owned by a live word. The idle pass skips them so the word REPLACES
+    // the character underneath instead of overprinting a second glyph on it.
+    const occupied = new Set();
+    for (const w of words) {
+      for (let k = 0; k < w.text.length; k++) occupied.add((w.col + k) + ',' + w.row);
+    }
+
+    // First pass: idle field, plus glyphs the cursor summons anywhere it goes.
     for (let r = 0; r < rows; r++) {
       const cy = originY + r * ch + ch / 2;
       for (let c = 0; c < cols; c++) {
-        // Sparse: a smooth mask gates which cells show a glyph at all.
-        const mask = noise(c * 0.16 + 11, r * 0.16 + driftT);
-        // Calmer on the left (headline zone), denser to the right.
-        const rightBias = (c < calmCol ? 0.26 : 0.52) * (mobile ? 0.62 : 1);
-        if (mask > rightBias) continue;
-
+        if (occupied.has(c + ',' + r)) continue;
         const cx = originX + c * cw;
 
-        // Pointer agitation: distance from this cell's center to the pointer.
+        // Pointer agitation first, so the cursor can pull glyphs out of empty
+        // cells across the whole hero, not only where the field is already dense.
         let agi = 0;
         if (pX >= 0) {
           const dx = cx + cw / 2 - pX;
           const dy = cy - pY;
-          agi = falloff(Math.hypot(dx, dy), 156) * (0.55 + 0.45 * wake);
+          agi = falloff(Math.hypot(dx, dy), 188) * (0.5 + 0.5 * wake);
         }
+
+        // Sparse at rest: a smooth mask gates which cells show a glyph. An empty
+        // cell is skipped unless the cursor is close enough to summon it.
+        const mask = noise(c * 0.16 + 11, r * 0.16 + driftT);
+        const rightBias = (c < calmCol ? 0.26 : 0.52) * (mobile ? 0.62 : 1);
+        if (mask > rightBias && agi < 0.12) continue;
 
         // Character drifts with noise; agitation churns it faster.
         const churn = noise(c * 0.3, r * 0.3 + driftT * 2 + agi * 4);
-        let glyph;
-        if (agi > 0.15) {
-          // agitated cells pull from the scramble alphabet
-          glyph = GLYPHS.noise[(churn * GLYPHS.noise.length) | 0];
-        } else {
-          glyph = IDLE[(churn * IDLE.length) | 0];
-        }
+        const glyph = (agi > 0.15)
+          ? GLYPHS.noise[(churn * GLYPHS.noise.length) | 0]
+          : IDLE[(churn * IDLE.length) | 0];
 
         // Colour: faintest ghost ink, lifting toward ink/accent under the cursor.
         let col;
         if (agi > 0.04) {
-          const base = mixHex(pal.inkGhost || pal.inkFaint, pal.ink, 0.55 * agi);
-          col = mixHex(base, pal.accent, 0.5 * agi);
+          const baseC = mixHex(pal.inkGhost || pal.inkFaint, pal.ink, 0.6 * agi);
+          col = mixHex(baseC, pal.accent, 0.55 * agi);
         } else {
-          // idle: faint -> soft by the drift mask. Enough presence to read as a
-          // living substrate of glyphs, still quiet behind the headline.
+          // idle: faint -> soft by the drift mask, a quiet living substrate.
           col = mixHex(pal.inkFaint, pal.inkSoft, 0.2 + churn * 0.42);
         }
+        // Fade in with the intro; summoned cells lift a touch above it.
+        ctx.globalAlpha = agi > 0.04 ? Math.min(1, intro + agi * 0.6) : intro;
         ctx.fillStyle = col;
         ctx.fillText(glyph, cx, cy);
       }
     }
+    ctx.globalAlpha = 1;
 
     // Second pass: settled words on top, so they read clearly.
     for (let i = words.length - 1; i >= 0; i--) {
@@ -210,10 +219,12 @@ export function initGlyphField(canvas) {
         }
         // Ink: faint -> dark ink, accent words tinted toward the studio blue.
         const dark = w.accent ? pal.accent : pal.ink;
+        ctx.globalAlpha = intro;
         ctx.fillStyle = mixHex(pal.inkFaint, dark, Math.min(1, weight));
         ctx.fillText(glyph, cx, cy);
       }
     }
+    ctx.globalAlpha = 1;
   }
 
   // --- Pointer wake (skip on touch, where hover is meaningless) -------------

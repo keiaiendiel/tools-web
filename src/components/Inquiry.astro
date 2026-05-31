@@ -1,0 +1,57 @@
+---
+/* Inquiry.astro - a light, non-binding "start a tool" intake dialog.
+   Native <dialog> for focus trap + Esc + backdrop. Reads copy from content[lang]
+   so it is bilingual. Opens from any [data-open-inquiry] trigger. On send it
+   composes a mailto with the answers; a copy fallback puts the same text on the
+   clipboard. Wired by src/scripts/inquiry.js (booted from main.js). */
+import { content } from '../i18n/content.js';
+
+interface Props { lang: 'en' | 'cs'; }
+const { lang } = Astro.props;
+const q = content[lang].inquiry;
+const TO = 'a.kindl@pm.me';
+---
+<dialog class="inq" data-inquiry data-to={TO} data-subject={q.title} aria-labelledby="inq-title">
+  <div class="inq__panel">
+    <button type="button" class="inq__x" data-inq-close aria-label={q.close}><span aria-hidden="true">&times;</span></button>
+    <p class="inq__eyebrow pix">tools<b>.</b>kindl<b>.</b>work</p>
+    <h2 id="inq-title" class="inq__title">{q.title}</h2>
+    <p class="inq__intro">{q.intro}</p>
+
+    <fieldset class="inq__q" data-group="who">
+      <legend class="inq__label">{q.who.label}</legend>
+      <div class="inq__chips" role="radiogroup" aria-label={q.who.label}>
+        {q.who.options.map((o) => (
+          <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
+        ))}
+      </div>
+      <input class="inq__other" type="text" data-other placeholder={q.who.other} aria-label={q.who.other} />
+    </fieldset>
+
+    <fieldset class="inq__q" data-group="need">
+      <legend class="inq__label">{q.need.label}</legend>
+      <div class="inq__chips" role="radiogroup" aria-label={q.need.label}>
+        {q.need.options.map((o) => (
+          <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
+        ))}
+      </div>
+      <input class="inq__other" type="text" data-other placeholder={q.need.other} aria-label={q.need.other} />
+    </fieldset>
+
+    <div class="inq__q">
+      <label class="inq__label" for="inq-problem">{q.problem.label}</label>
+      <textarea id="inq-problem" class="inq__text" rows="3" data-field="problem" placeholder={q.problem.placeholder}></textarea>
+    </div>
+
+    <div class="inq__q">
+      <label class="inq__label" for="inq-email">{q.email.label}</label>
+      <input id="inq-email" class="inq__input" type="email" data-field="email" placeholder={q.email.placeholder} autocomplete="email" inputmode="email" />
+    </div>
+
+    <div class="inq__actions">
+      <button type="button" class="pill pill--accent" data-inq-send>{q.send}</button>
+      <button type="button" class="pill" data-inq-copy data-copied={q.copied}>{q.copy}</button>
+    </div>
+    <p class="inq__note" data-inq-note>{q.note}</p>
+  </div>
+</dialog>

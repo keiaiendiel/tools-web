@@ -11,6 +11,7 @@ import { initGeneratorDemo } from './generator-demo.js';
 import { initExamples } from './examples.js';
 import { initFlowField } from './flowfield.js';
 import { initAmbient, initFootField } from './ambient.js';
+import { initInquiry } from './inquiry.js';
 
 function safe(label, fn) {
   try { fn(); } catch (err) { console.warn('[tools] ' + label + ' failed', err); }
@@ -29,6 +30,7 @@ export function boot() {
     one('[data-examples]', 'examples', initExamples);
     one('[data-flowfield]', 'flowfield', initFlowField);
     one('[data-ambient-foot]', 'footfield', initFootField);
+    one('[data-inquiry]', 'inquiry', initInquiry);
     document.querySelectorAll('[data-ambient]').forEach((el) =>
       safe('ambient', () => initAmbient(el)));
   };

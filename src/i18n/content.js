@@ -99,6 +99,19 @@ export const content = {
       cta1: 'Start a tool', cta2: 'The art studio',
     },
     footer: { sig1: 'Antonín Kindl. ', sigBold: 'Small software, made to fit.', sig2: ' Alongside the art studio at kindl.work.', studio: 'Studio', now: 'Now', role: 'design engineer', place: 'Prague' },
+    inquiry: {
+      title: 'Start a tool',
+      intro: 'A non-binding inquiry. A few quick taps, no account. I read every one and reply myself.',
+      who: { label: 'Who are you?', options: ['a studio', 'a brand', 'a gallery or museum', 'music or a label', 'film or production', 'an event', 'new media / VJ', 'a shop', 'just me', 'a team'], other: 'or write your own' },
+      need: { label: 'What do you need?', options: ['a tool that does not exist yet', 'a finished design turned into a generator', 'a calculator or planner', 'a small browser utility', 'to automate a repeat', 'not sure yet'], other: 'or write your own' },
+      problem: { label: 'What do you keep doing by hand?', placeholder: 'The task, and what your data looks like. A sentence is plenty.' },
+      email: { label: 'Where do I reply?', placeholder: 'you@studio.com' },
+      send: 'Send it',
+      note: 'This opens your mail with the message ready. Nothing is sent until you confirm it there.',
+      copy: 'Copy instead',
+      copied: 'Copied to clipboard',
+      close: 'Close',
+    },
   },
 
   cs: {
@@ -187,5 +200,18 @@ export const content = {
       cta1: 'Napiš mi', cta2: 'Umělecké studio',
     },
     footer: { sig1: 'Antonín Kindl. ', sigBold: 'Malý software na míru.', sig2: ' Vedle uměleckého studia na kindl.work.', studio: 'Studio', now: 'Teď', role: 'design engineer', place: 'Praha' },
+    inquiry: {
+      title: 'Nezávazná poptávka',
+      intro: 'Nezávazná poptávka. Pár ťuknutí, žádný účet. Čtu každou a odpovídám sám.',
+      who: { label: 'Kdo jsi?', options: ['studio', 'značka', 'galerie nebo muzeum', 'hudba, vydavatelství', 'film nebo produkce', 'akce', 'nová média / VJ', 'obchod', 'jen já', 'tým'], other: 'nebo napiš vlastní' },
+      need: { label: 'Co potřebuješ?', options: ['nástroj, který zatím neexistuje', 'hotový vizuál předělaný na generátor', 'kalkulačku nebo plánovač', 'malý nástroj do prohlížeče', 'zautomatizovat opakování', 'zatím nevím'], other: 'nebo napiš vlastní' },
+      problem: { label: 'Co pořád děláš ručně?', placeholder: 'Co řešíš a jak vypadají tvoje data. Stačí věta.' },
+      email: { label: 'Kam mám odepsat?', placeholder: 'ty@studio.cz' },
+      send: 'Odeslat',
+      note: 'Otevře se ti pošta s připravenou zprávou. Nic se neodešle, dokud to tam nepotvrdíš.',
+      copy: 'Zkopírovat',
+      copied: 'Zkopírováno do schránky',
+      close: 'Zavřít',
+    },
   },
 };
