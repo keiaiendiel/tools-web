@@ -33,6 +33,9 @@ export function initGlyphField(canvas) {
 
   // Pointer wake. pX/pY in css px, -1 when absent; wake decays toward 0.
   let pX = -1, pY = -1, wake = 0;
+  // Recent pointer samples, each { x, y, s } with s decaying 1 -> 0. They give
+  // the cursor a subtle trace: a fading tail of disturbed glyphs behind it.
+  const trail = [];
 
   // Active settled words. Each: { text, col, row, born, life } in ms-phases.
   const words = [];
@@ -42,6 +45,10 @@ export function initGlyphField(canvas) {
   // Idle glyph alphabet: faint texture from ramp low end + dots.
   const IDLE = [GLYPHS.ramp[1], GLYPHS.ramp[2], GLYPHS.ramp[3], GLYPHS.ramp[4],
                 GLYPHS.dots[0], GLYPHS.dots[5]];
+  // Agitation scramble: lively but LIGHT, so the cursor wake stays at the
+  // field's own weight. The solid blocks (#, ░, ▒, ▓) are dropped on purpose;
+  // a glyph with heavy ink coverage reads dark even at a faint colour.
+  const CHURN = GLYPHS.noise.filter((g) => !'#░▒▓'.includes(g));
 
   // Grab our own 2D context up front. fitCanvas runs resize()/onResize
   // synchronously, so a ctx destructured from its return value would be in the
@@ -154,45 +161,83 @@ export function initGlyphField(canvas) {
       for (let k = 0; k < w.text.length; k++) occupied.add((w.col + k) + ',' + w.row);
     }
 
-    // First pass: idle field, plus glyphs the cursor summons anywhere it goes.
+    // Pointer-active region: a bounding box around the live cursor and its
+    // trail, padded by the largest radius. The per-cell agitation work below
+    // only runs inside it, so a still or absent cursor costs almost nothing.
+    let axMin = Infinity, axMax = -Infinity, ayMin = Infinity, ayMax = -Infinity;
+    if (pX >= 0) {
+      const ext = 232;
+      axMin = pX - ext; axMax = pX + ext; ayMin = pY - ext; ayMax = pY + ext;
+      for (let i = 0; i < trail.length; i++) {
+        const p = trail[i];
+        if (p.s <= 0.02) continue;
+        if (p.x - ext < axMin) axMin = p.x - ext;
+        if (p.x + ext > axMax) axMax = p.x + ext;
+        if (p.y - ext < ayMin) ayMin = p.y - ext;
+        if (p.y + ext > ayMax) ayMax = p.y + ext;
+      }
+    }
+
+    // First pass: the idle field. The cursor disturbs the glyphs that are
+    // ALREADY there and sprinkles only a few new ones at the field's edge, so
+    // the wake follows the real distribution instead of stamping a solid disk.
     for (let r = 0; r < rows; r++) {
       const cy = originY + r * ch + ch / 2;
       for (let c = 0; c < cols; c++) {
         if (occupied.has(c + ',' + r)) continue;
         const cx = originX + c * cw;
+        const ccx = cx + cw / 2;
 
-        // Pointer agitation first, so the cursor can pull glyphs out of empty
-        // cells across the whole hero, not only where the field is already dense.
+        // Cursor agitation, only for cells inside the active box. The radius is
+        // not a clean circle: a per-cell noise wobble breaks it into soft lobes
+        // that morph slowly, and a decaying trail trails the moving cursor.
         let agi = 0;
-        if (pX >= 0) {
-          const dx = cx + cw / 2 - pX;
-          const dy = cy - pY;
-          agi = falloff(Math.hypot(dx, dy), 188) * (0.5 + 0.5 * wake);
+        if (pX >= 0 && ccx >= axMin && ccx <= axMax && cy >= ayMin && cy <= ayMax) {
+          const wob = 0.72 + 0.46 * noise(ccx * 0.011 + driftT, cy * 0.011 - driftT);
+          const R = 188 * wob;
+          agi = falloff(Math.hypot(ccx - pX, cy - pY), R) * (0.5 + 0.5 * wake);
+          for (let i = 0; i < trail.length; i++) {
+            const p = trail[i];
+            if (p.s <= 0.02) continue;
+            const a = falloff(Math.hypot(ccx - p.x, cy - p.y), R * 0.82) * p.s * 0.55;
+            if (a > agi) agi = a;
+          }
         }
 
-        // Sparse at rest: a smooth mask gates which cells show a glyph. An empty
-        // cell is skipped unless the cursor is close enough to summon it.
+        // Background density: a smooth mask, denser on the right. A cell that is
+        // present holds an idle glyph at rest.
         const mask = noise(c * 0.16 + 11, r * 0.16 + driftT);
         const rightBias = (c < calmCol ? 0.26 : 0.52) * (mobile ? 0.62 : 1);
-        if (mask > rightBias && agi < 0.12) continue;
+        const present = mask <= rightBias;
 
-        // Character drifts with noise; agitation churns it faster.
-        const churn = noise(c * 0.3, r * 0.3 + driftT * 2 + agi * 4);
-        const glyph = (agi > 0.15)
-          ? GLYPHS.noise[(churn * GLYPHS.noise.length) | 0]
+        // What the cursor does here:
+        //  - present cell: agitate the glyph that is already there.
+        //  - empty cell : sprinkle only a few, biased toward the field's edge
+        //    and only close to the cursor, so the field thickens rather than a
+        //    blob appearing in dead space. Never a fill.
+        let summon = 0;
+        if (present) {
+          summon = agi;
+        } else if (agi > 0.3) {
+          const edge = 1 - Math.min(1, (mask - rightBias) / 0.28); // 1 at edge -> 0 deep empty
+          const sparkle = noise(c * 0.73 + 31, r * 0.73 + driftT * 1.4);
+          if (sparkle > 0.86 - 0.18 * agi - 0.16 * edge) summon = agi * 0.6;
+        }
+        if (!present && summon <= 0) continue;
+
+        // Character drifts with noise; agitation churns it faster (the glitch).
+        const churn = noise(c * 0.3, r * 0.3 + driftT * 2 + summon * 4);
+        const glyph = (summon > 0.15)
+          ? CHURN[(churn * CHURN.length) | 0]
           : IDLE[(churn * IDLE.length) | 0];
 
-        // Colour: faintest ghost ink, lifting toward ink/accent under the cursor.
-        let col;
-        if (agi > 0.04) {
-          const baseC = mixHex(pal.inkGhost || pal.inkFaint, pal.ink, 0.6 * agi);
-          col = mixHex(baseC, pal.accent, 0.55 * agi);
-        } else {
-          // idle: faint -> soft by the drift mask, a quiet living substrate.
-          col = mixHex(pal.inkFaint, pal.inkSoft, 0.2 + churn * 0.42);
-        }
-        // Fade in with the intro; summoned cells lift a touch above it.
-        ctx.globalAlpha = agi > 0.04 ? Math.min(1, intro + agi * 0.6) : intro;
+        // Colour stays in the SAME brightness band as the idle field. The cursor
+        // reads through the churning character and a gentle accent tint, NOT by
+        // darkening, so the wake sits at the field's own weight. Opacity is the
+        // idle opacity, never lifted.
+        const baseC = mixHex(pal.inkFaint, pal.inkSoft, 0.2 + churn * 0.42);
+        const col = summon > 0.04 ? mixHex(baseC, pal.accent, 0.22 * summon) : baseC;
+        ctx.globalAlpha = intro;
         ctx.fillStyle = col;
         ctx.fillText(glyph, cx, cy);
       }
@@ -235,11 +280,18 @@ export function initGlyphField(canvas) {
   const surface = canvas.closest('.hero') || canvas;
   const onMove = (e) => {
     const rect = canvas.getBoundingClientRect();
-    pX = e.clientX - rect.left;
-    pY = e.clientY - rect.top;
-    wake = 1;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    pX = x; pY = y; wake = 1;
+    // Drop a fresh trail sample once the cursor has moved a little, so a fast
+    // sweep leaves a spread-out tail and a slow drift leaves a short one.
+    const last = trail.length ? trail[trail.length - 1] : null;
+    if (!last || Math.hypot(x - last.x, y - last.y) > 13) {
+      trail.push({ x, y, s: 1 });
+      if (trail.length > 18) trail.shift();
+    }
   };
-  const onLeave = () => { pX = -1; pY = -1; };
+  const onLeave = () => { pX = -1; pY = -1; trail.length = 0; };
   let pointerWired = false;
   function wirePointer() {
     if (pointerWired || (matchMedia && matchMedia('(pointer: coarse)').matches)) return;
@@ -269,6 +321,9 @@ export function initGlyphField(canvas) {
       t += sec;
       // wake decays toward calm over ~0.8s
       wake = Math.max(0, wake - sec / 0.8);
+      // trail samples fade over ~0.55s; the oldest (front) expires first.
+      for (let i = 0; i < trail.length; i++) trail[i].s -= sec / 0.55;
+      while (trail.length && trail[0].s <= 0) trail.shift();
       // spawn cadence: a new word attempt every ~2.4s, staggered
       if (t - lastSpawn > 1.0) { lastSpawn = t; spawnWord(); }
       draw();
