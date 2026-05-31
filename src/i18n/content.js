@@ -82,11 +82,10 @@ export const content = {
     },
     band: { line1: 'Made to fit,', line2: 'one tool at a time.', sub: 'No platform, no subscription, no account. A file you open, or a tool I build and hand you.' },
     order: {
-      h: 'Three ways. The price is on the page.',
+      h: 'Use a ready-made tool, or get one built for you.',
       cols: [
-        { t: 'Use it',        px: 'free',       d: 'Runs in the browser. No account, no upload to anyone. Most of the bench.' },
-        { t: 'License it',    px: '€9 - 49',      d: 'The pro version: no watermark, full export, presets, an offline build you own.' },
-        { t: 'Built to order', px: 'from €1500', d: 'A tool in a week, fixed scope, handed over with docs. Or a custom generator from €3000. No discovery call, no open-ended brief.' },
+        { t: 'The tools',         px: 'free',       d: 'Almost everything runs in your browser. No account, nothing uploaded, nothing to install. A few tools add an optional pro version, pay what you want, yours to keep.' },
+        { t: 'A tool of your own', px: 'from €1500', d: 'Fixed packages with a set scope and a set price. A working tool in about a week, from €1500, handed over with a short guide. A custom generator runs from €3000. Bigger systems start with a free first call and a fixed quote you approve before any work begins. You own what gets built. No subscription, no strings.' },
       ],
       cta1: 'Start a tool', cta2: 'The art studio',
     },
@@ -187,11 +186,10 @@ export const content = {
     },
     band: { line1: 'Na míru,', line2: 'jeden nástroj po druhém.', sub: 'Žádná platforma, žádné předplatné, žádný účet. Soubor, který otevřeš, nebo nástroj, který ti udělám a předám.' },
     order: {
-      h: 'Tři cesty. Cena je na stránce.',
+      h: 'Dvě cesty k nástroji.',
       cols: [
-        { t: 'Použij ho',  px: 'zdarma',    d: 'Běží v prohlížeči. Bez účtu, nic se nikam nenahrává. Většina ponku.' },
-        { t: 'Kup licenci', px: '€9 - 49',     d: 'Pro verze: bez vodoznaku, plný export, presety, offline verze, kterou vlastníš.' },
-        { t: 'Na zakázku',  px: 'od €1500',  d: 'Nástroj za týden, pevný rozsah, předaný s dokumentací. Nebo generátor na míru od €3000. Žádný úvodní hovor, žádné neohraničené zadání.' },
+        { t: 'Nástroje',      px: 'zdarma',    d: 'Nástroje běží zdarma rovnou v prohlížeči. Bez účtu, nic se nikam nenahrává, nic se neinstaluje. Některé nástroje mají plnou verzi, kterou pak vlastníš, a u ní si cenu určuješ sám: zaplať, kolik to pro tebe má cenu.' },
+        { t: 'Vlastní nástroj', px: 'od 1500 €', d: 'Pojmenované balíčky: pevná cena za výsledek, kterou znáš předem. Funkční nástroj zhruba za týden od 1500 €, pevný rozsah, předaný s dokumentací. Generátor na míru (vlastní vstupy, tvoje šablony, dávkový výstup) od 3000 €. Větší systémy začneme nezávazným hovorem a cenu uvidíš dřív, než se do něčeho pustíme. Žádné předplatné, nikam tě nezamykám, vlastníš to, co vznikne.' },
       ],
       cta1: 'Napiš mi', cta2: 'Umělecké studio',
     },

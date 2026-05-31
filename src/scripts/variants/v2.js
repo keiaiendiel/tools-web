@@ -267,7 +267,7 @@ function initTerminal() {
       ['bench', 'what comes off the bench'],
       ['ships', 'what ships first (01 / 02 / 03)'],
       ['fields', 'how a small tool fits your trade'],
-      ['order', 'three ways, the price is on the page'],
+      ['order', 'the tools are free; a tool of your own is fixed price'],
       ['kindl', 'open the art studio at kindl.work'],
       ['clear', 'wipe the screen'],
     ];

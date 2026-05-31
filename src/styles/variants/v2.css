@@ -244,7 +244,7 @@
 .v2-ship .who { color: var(--t-ink-faint); font-size: 0.86em; }
 .v2-ship .what { color: var(--t-ink-soft); display: block; }
 
-/* order: the three ways, each a labelled block with a price */
+/* order: each way a labelled block with a price */
 .v2-way { display: flex; align-items: baseline; gap: 10px; }
 .v2-way .t { color: var(--t-ink); font-weight: 600; }
 .v2-way .px { color: var(--t-amber); font-variant-numeric: tabular-nums; margin-left: auto; white-space: nowrap; }

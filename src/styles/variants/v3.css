@@ -567,13 +567,13 @@
 }
 
 /* =============================================================================
-   MOVEMENT V - THE THREE WAYS  (quiet, tasteful, present)
+   MOVEMENT V - TWO WAYS  (quiet, tasteful, present)
 ============================================================================= */
 .v3-mv--order { padding-bottom: clamp(110px, 16vh, 180px); }
 .v3-ways {
   margin: clamp(32px, 5vh, 50px) 0 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: var(--v3-line);
   border: 1px solid var(--v3-line);

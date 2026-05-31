@@ -144,7 +144,7 @@
 .lab-box__d { margin-top: var(--s-2); font-size: var(--t-sm); }
 
 /* ---------- Menu (the three ways) ---------- */
-.menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+.menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-6); }
 @media (max-width: 860px) { .menu { grid-template-columns: 1fr; } }
 .menu__col h4 { font-family: var(--font-mono); font-weight: 600; font-size: var(--t-md); display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); }
 .menu__col h4 .px { color: var(--accent); font-variant-numeric: tabular-nums; }

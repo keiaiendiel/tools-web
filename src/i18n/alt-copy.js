@@ -27,11 +27,10 @@ export const altCopy = {
     ],
   },
   order: {
-    h: 'Three ways. The price is open.',
+    h: 'Use a ready-made tool, or get one built for you.',
     cols: [
-      { t: 'Use it', px: 'free', d: 'Most of the lab runs in your browser. No account, nothing to install, nothing uploaded anywhere. Open it and go.' },
-      { t: 'Talk it through', px: 'free', d: 'Tell me the task and what your data looks like. The first conversation costs nothing, and often it settles whether a small tool is the answer at all.' },
-      { t: 'Built to order', px: 'from €1500', d: 'A tool in about a week, fixed scope, handed over with docs. Or a custom generator from €3000. No open-ended brief.' },
+      { t: 'The tools', px: 'free', d: 'Almost everything runs in your browser. No account, nothing uploaded, nothing to install. A few tools add an optional pro version, pay what you want, yours to keep.' },
+      { t: 'A tool of your own', px: 'from €1500', d: 'Fixed packages with a set scope and a set price. A working tool in about a week, from €1500, handed over with a short guide. A custom generator runs from €3000. Bigger systems start with a free first call and a fixed quote you approve before any work begins. You own what gets built. No subscription, no strings.' },
     ],
     cta1: base.order.cta1,
     cta2: base.order.cta2,
