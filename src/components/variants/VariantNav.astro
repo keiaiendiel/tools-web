@@ -5,8 +5,8 @@
    `current` = the active variant number (1-5), 0 = none (the lab index). */
 const { current = 0 } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const names = { 1: 'Press', 2: 'Terminal', 3: 'Composition', 4: 'Schematic', 5: 'Field' };
-const nums = [1, 2, 3, 4, 5];
+const names = { 1: 'Press', 2: 'Terminal', 3: 'Composition', 4: 'Schematic', 5: 'Field', 6: 'Probe' };
+const nums = [1, 2, 3, 4, 5, 6];
 ---
 <nav class="vnav" aria-label="Design variants" data-vnav>
   <a class="vnav__lab" href={base + 'lab'} title="All variants">lab</a>

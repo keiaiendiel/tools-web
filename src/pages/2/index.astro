@@ -1,8 +1,8 @@
 ---
 import VariantBase from '../../layouts/VariantBase.astro';
-import { content } from '../../i18n/content.js';
+import { vcopy } from '../../i18n/variant-copy.js';
 import '../../styles/variants/v2.css';
-const c = content.en;
+const c = vcopy[2];
 const trades = Object.keys(c.fields.examples);
 ---
 <VariantBase

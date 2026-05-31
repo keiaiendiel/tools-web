@@ -12,9 +12,9 @@
    under .v4 (CSS) and the body class .v4. House rule: no em dashes anywhere.
 ============================================================================= */
 import VariantBase from '../../layouts/VariantBase.astro';
-import { content } from '../../i18n/content.js';
+import { vcopy } from '../../i18n/variant-copy.js';
 import '../../styles/variants/v4.css';
-const c = content.en;
+const c = vcopy[4];
 ---
 <VariantBase
   n={4}
