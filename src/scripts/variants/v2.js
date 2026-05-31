@@ -358,13 +358,13 @@ function initTerminal() {
       gap();
     });
     line('<span class="v2-soft">' + esc('Start one, or step over to the art studio:') + '</span>');
-    line('  <a href="https://kindl.work" target="_blank" rel="noopener">' + esc(c.order.cta1) + ' &#8599;</a>   ' +
-         '<a href="https://kindl.work" target="_blank" rel="noopener">' + esc(c.order.cta2) + ' &#8599;</a>');
+    line('  <a href="https://see.kindl.work" target="_blank" rel="noopener">' + esc(c.order.cta1) + ' &#8599;</a>   ' +
+         '<a href="https://see.kindl.work" target="_blank" rel="noopener">' + esc(c.order.cta2) + ' &#8599;</a>');
   }
 
   function cmdKindl() {
-    line('<span class="v2-soft">' + esc('opening the art studio ') + '<a href="https://kindl.work" target="_blank" rel="noopener">kindl.work &#8599;</a>' + esc(' in a new tab.') + '</span>');
-    try { window.open('https://kindl.work', '_blank', 'noopener'); } catch (e) { /* popup blocked: link above still works */ }
+    line('<span class="v2-soft">' + esc('opening the art studio ') + '<a href="https://see.kindl.work" target="_blank" rel="noopener">kindl.work &#8599;</a>' + esc(' in a new tab.') + '</span>');
+    try { window.open('https://see.kindl.work', '_blank', 'noopener'); } catch (e) { /* popup blocked: link above still works */ }
   }
 
   function cmdClear() {

@@ -81,14 +81,6 @@ export const content = {
       },
     },
     band: { line1: 'Made to fit,', line2: 'one tool at a time.', sub: 'No platform, no subscription, no account. A file you open, or a tool I build and hand you.' },
-    ships: {
-      h: 'What ships first.',
-      items: [
-        { no: '01', nm: 'Identity generator', what: 'Your finished visual, rebuilt as a generator your team runs alone. On brand every time, without you in the loop.', who: 'galleries / festivals' },
-        { no: '02', nm: 'Plot Calculator',    what: 'A parametric stage plot and rider. The file stays editable. The JPG that never quite fit is gone.', who: 'touring bands / sound' },
-        { no: '03', nm: 'pose-to-OSC',        what: 'Your body into OSC, in the browser, no heavy setup. The kind of utility new media shares.', who: 'VJ / installation' },
-      ],
-    },
     order: {
       h: 'Three ways. The price is on the page.',
       cols: [
@@ -194,14 +186,6 @@ export const content = {
       },
     },
     band: { line1: 'Na míru,', line2: 'jeden nástroj po druhém.', sub: 'Žádná platforma, žádné předplatné, žádný účet. Soubor, který otevřeš, nebo nástroj, který ti udělám a předám.' },
-    ships: {
-      h: 'Co vyjde jako první.',
-      items: [
-        { no: '01', nm: 'Generátor identity', what: 'Tvůj hotový vizuál, předělaný na generátor, který tvůj tým zvládne sám. Pokaždé ve stylu, a ty u toho nemusíš být.', who: 'galerie / festivaly' },
-        { no: '02', nm: 'Plot Calculator',    what: 'Parametrický stage plot a rider. Pořád se dá upravovat. Konec JPG, co nikdy přesně neseděl.', who: 'kapely na turné / zvuk' },
-        { no: '03', nm: 'pose-to-OSC',        what: 'Tvoje tělo do OSC, rovnou v prohlížeči, bez složitého nastavení. Přesně ten druh nástroje, jaký si nová média předávají.', who: 'VJ / instalace' },
-      ],
-    },
     order: {
       h: 'Tři cesty. Cena je na stránce.',
       cols: [

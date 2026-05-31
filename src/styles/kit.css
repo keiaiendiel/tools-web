@@ -143,17 +143,6 @@
 .lab-box__k { font-size: var(--t-lg); }
 .lab-box__d { margin-top: var(--s-2); font-size: var(--t-sm); }
 
-/* ---------- Ship cards (the first three) ---------- */
-.ships { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); }
-@media (max-width: 860px) { .ships { grid-template-columns: 1fr; } }
-.ship { padding: var(--s-6); border-right: 1px solid var(--rule); position: relative; min-height: 240px; display: flex; flex-direction: column; }
-.ship:last-child { border-right: 0; }
-@media (max-width: 860px) { .ship { border-right: 0; border-bottom: 1px solid var(--rule); } .ship:last-child { border-bottom: 0; } }
-.ship__no { font-size: var(--t-xs); color: var(--accent); letter-spacing: var(--tr-label); }
-.ship__name { margin-top: var(--s-3); font-family: var(--font-serif); font-weight: 600; font-size: var(--t-xl); line-height: var(--lh-snug); }
-.ship__what { margin-top: var(--s-3); color: var(--fg-muted); font-size: var(--t-sm); }
-.ship__who { margin-top: auto; padding-top: var(--s-5); font-size: var(--t-2xs); color: var(--fg-faint); letter-spacing: var(--tr-mono); text-transform: uppercase; }
-
 /* ---------- Menu (the three ways) ---------- */
 .menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
 @media (max-width: 860px) { .menu { grid-template-columns: 1fr; } }
@@ -265,7 +254,6 @@
   .machine__stream { min-height: 0; }
   .lines li { padding-block: 9px; }
   .topbar { padding: var(--s-3) var(--gutter); }
-  .ship { min-height: 0; }
 }
 
 /* ---------- Hero CTA (replaces the old meta bullets) ---------- */
