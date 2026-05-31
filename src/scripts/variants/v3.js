@@ -158,6 +158,12 @@ class Score {
     pulse.start();
     beat.start();
 
+    // hold references the cursor can nudge while sound is on
+    this.filter = filter;
+    this.baseCutoff = 620; // the LFO sweeps around this; the cursor offsets it
+    this.voiceOscs = voiceNodes.map((vn) => vn[0]); // for a touch of detune
+    this.voiceBaseDet = voices.map((v) => v.det);
+    this.baseMaster = 0.16; // the level start() ramps to; nudge stays under it
     this.master = master;
     this.analyser = analyser;
     this.freq = new Uint8Array(analyser.frequencyBinCount);
@@ -177,7 +183,42 @@ class Score {
     }, 1000);
     this.nodes = [];
     this.analyser = null;
+    this.filter = null;
+    this.voiceOscs = [];
     this.on = false;
+  }
+  /* nudge(y01, intensity01) - let the cursor lean on the score, gently.
+     y01:        pointer height, 0 at top .. 1 at bottom of the viewport
+     intensity01: 0..1, from pointer speed and pull strength
+     Everything ramps with setTargetAtTime so there is no zipper noise. The
+     LFO keeps modulating filter.frequency on top of this offset; we only move
+     the resting cutoff and add a whisker of detune + level. Stays musical. */
+  nudge(y01, intensity01) {
+    if (!this.on || !this.ctx || !this.filter) return;
+    const now = this.ctx.currentTime;
+    // higher cursor opens the filter, lower closes it. A calm, narrow range.
+    const cutoff = lerp(360, 1180, clamp(1 - y01, 0, 1));
+    const tc = 0.18; // slow time constant: smooth, never sudden
+    try { this.filter.frequency.setTargetAtTime(cutoff, now, tc); } catch (e) { /* ignore */ }
+    // a small lift in level with intensity, always under the base ceiling
+    const level = this.baseMaster * (1 + clamp(intensity01, 0, 1) * 0.22);
+    try { this.master.gain.setTargetAtTime(level, now, 0.25); } catch (e) { /* ignore */ }
+    // a whisker of extra detune per voice, scaled by intensity (max a few cents)
+    const wobble = clamp(intensity01, 0, 1) * 6;
+    for (let i = 0; i < this.voiceOscs.length; i++) {
+      const target = this.voiceBaseDet[i] + wobble * (i % 2 ? -1 : 1);
+      try { this.voiceOscs[i].detune.setTargetAtTime(target, now, 0.3); } catch (e) { /* ignore */ }
+    }
+  }
+  /* relax() - cursor left or stopped: ease params back to their resting state. */
+  relax() {
+    if (!this.on || !this.ctx || !this.filter) return;
+    const now = this.ctx.currentTime;
+    try { this.filter.frequency.setTargetAtTime(this.baseCutoff, now, 0.4); } catch (e) { /* ignore */ }
+    try { this.master.gain.setTargetAtTime(this.baseMaster, now, 0.5); } catch (e) { /* ignore */ }
+    for (let i = 0; i < this.voiceOscs.length; i++) {
+      try { this.voiceOscs[i].detune.setTargetAtTime(this.voiceBaseDet[i], now, 0.5); } catch (e) { /* ignore */ }
+    }
   }
   // returns { level, low, high } in 0..1, or zeros when off
   read() {
@@ -252,6 +293,25 @@ function boot() {
     t: 0,          // seconds since start
   };
   const score = new Score();
+
+  /* ----- gravity well (follows the cursor / touch) --------------------------
+     The pointer pulls the field toward it and sets it swirling, like matter
+     near a black hole, then the field eases back to its noise flow when the
+     pointer stops or leaves. Everything is smoothed so it feels physical, not
+     jumpy: a lerped position, a strength that fades in and out, a soft falloff
+     radius and a tangential (orbital) term so particles curve around it rather
+     than only collapsing inward. Reduced motion never wires any of this up.    */
+  const well = {
+    tx: 0, ty: 0,      // raw target (last pointer position)
+    x: 0, y: 0,        // smoothed position the physics actually uses
+    have: false,       // a pointer has been seen at least once
+    active: false,     // pointer currently moving / present
+    strength: 0,       // 0..1, eases in while active, out when idle / gone
+    speed: 0,          // smoothed pointer speed in px per frame, for the audio
+    lastT: 0,          // timestamp of last pointer sample, to detect "stopped"
+  };
+  // radius of influence scales with the smaller screen edge, lighter on mobile
+  const wellRadius = () => Math.min(W, H) * (isSmall ? 0.34 : 0.42);
 
   /* ----- scroll scrub ----- */
   function computeProgress() {
@@ -354,6 +414,43 @@ function boot() {
   window.addEventListener('resize', computeProgress, { passive: true });
   computeProgress();
 
+  /* ----- pointer + touch wiring for the gravity well ------------------------
+     We listen on window so the well also responds over the captions (they sit
+     above the canvas). Only attached here, past the reduced-motion return, so
+     reduced motion never animates anything. Samples are cheap: store the raw
+     target and a speed estimate; the smoothing happens in the frame loop.      */
+  function sampleWell(clientX, clientY, now) {
+    const x = clientX, y = clientY;
+    if (well.have) {
+      const dx = x - well.tx, dy = y - well.ty;
+      const inst = Math.sqrt(dx * dx + dy * dy);
+      well.speed = well.speed * 0.7 + inst * 0.3; // smoothed px per move
+    } else {
+      // first sample: snap the smoothed position so it does not lunge in
+      well.x = x; well.y = y;
+    }
+    well.tx = x; well.ty = y;
+    well.have = true;
+    well.active = true;
+    well.lastT = now;
+  }
+  const onPointerMove = (e) => sampleWell(e.clientX, e.clientY, performance.now());
+  const onPointerLeave = () => { well.active = false; };
+  const onTouchMove = (e) => {
+    const t = e.touches && e.touches[0];
+    if (t) sampleWell(t.clientX, t.clientY, performance.now());
+  };
+  const onTouchEnd = () => { well.active = false; };
+  // pointer events cover mouse + pen + most touch; keep an explicit touch path
+  // too for older mobile Safari, both passive so scrolling never stalls.
+  window.addEventListener('pointermove', onPointerMove, { passive: true });
+  window.addEventListener('pointerleave', onPointerLeave, { passive: true });
+  window.addEventListener('pointercancel', onPointerLeave, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: true });
+  window.addEventListener('touchend', onTouchEnd, { passive: true });
+  window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+  window.addEventListener('blur', onPointerLeave, { passive: true });
+
   /* ----- sound toggle ----- */
   const soundBtn = document.querySelector('[data-sound]');
   const soundLabel = document.querySelector('[data-sound-label]');
@@ -386,6 +483,35 @@ function boot() {
     state.beat = lerp(state.beat, targetBeat, 0.18);
     // decay scroll velocity each frame
     scrollVel *= 0.94;
+
+    /* advance the gravity well. If the pointer has not moved for a moment we
+       treat it as stopped: the swirl keeps going but stops fading in. When the
+       pointer leaves or the touch ends, strength eases back to zero and the
+       field returns to its plain noise flow. */
+    if (well.have) {
+      // smooth the position toward the raw target so the pull never snaps
+      well.x = lerp(well.x, well.tx, 0.14);
+      well.y = lerp(well.y, well.ty, 0.14);
+      // if no new sample for ~140ms, the pointer has stopped moving
+      if (well.active && now - well.lastT > 140) well.active = false;
+      // strength eases in while active, eases out while idle or gone
+      const targetStrength = well.active ? 1 : 0;
+      well.strength = lerp(well.strength, targetStrength, well.active ? 0.07 : 0.045);
+      well.speed *= 0.86; // pointer speed estimate decays toward rest
+      if (well.strength < 0.002 && !well.active) well.strength = 0;
+    }
+
+    // when audio is on, let the well lean on the score; otherwise leave it.
+    if (audioOn) {
+      if (well.have && well.strength > 0.01) {
+        const y01 = clamp(well.y / Math.max(1, H), 0, 1);
+        // intensity blends pull strength with a touch of pointer speed
+        const intensity = clamp(well.strength * (0.4 + clamp(well.speed / 90, 0, 1) * 0.6), 0, 1);
+        score.nudge(y01, intensity);
+      } else {
+        score.relax();
+      }
+    }
 
     // palette: blend the two stages we sit between, by global progress
     const sf = state.progress * (STAGE_COUNT - 1);
@@ -422,6 +548,17 @@ function boot() {
     ctx.lineWidth = lineW;
     ctx.lineCap = 'round';
 
+    // gravity well parameters, computed once per frame for the whole field.
+    // wActive: is the well pulling at all this frame. wR: soft falloff radius.
+    // wPull: peak inward acceleration. wSwirl: tangential (orbital) component
+    // so particles curve around the well instead of only collapsing into it.
+    const wActive = well.have && well.strength > 0.002;
+    const wR = wellRadius();
+    const wR2 = wR * wR;
+    const wPull = 2.6 * well.strength * (0.7 + energy * 0.5);
+    const wSwirl = 1.7 * well.strength;
+    const wx = well.x, wy = well.y;
+
     for (let i = 0; i < N; i++) {
       // flow angle from layered noise
       const nx = px[i] * flowScale;
@@ -435,8 +572,34 @@ function boot() {
 
       plx[i] = px[i];
       ply[i] = py[i];
-      px[i] += Math.cos(ang) * speed + toCx * W;
-      py[i] += Math.sin(ang) * speed + toCy * H;
+      let vx = Math.cos(ang) * speed + toCx * W;
+      let vy = Math.sin(ang) * speed + toCy * H;
+
+      // gravity well: a soft-falloff pull plus an orbital swirl around it
+      if (wActive) {
+        const gx = wx - px[i];
+        const gy = wy - py[i];
+        const d2 = gx * gx + gy * gy;
+        if (d2 < wR2) {
+          const d = Math.sqrt(d2) || 0.0001;
+          // smooth falloff: full near the centre, zero at the radius edge.
+          // a small core softens the singularity so it never goes jumpy.
+          const t = 1 - d / wR;
+          const fall = t * t * (3 - 2 * t);
+          const soft = d / (d + wR * 0.12); // tames the very centre
+          const ux = gx / d, uy = gy / d;    // unit vector toward the well
+          const pull = wPull * fall * soft;
+          vx += ux * pull;
+          vy += uy * pull;
+          // tangential term: rotate the inward vector 90 degrees to orbit
+          const swirl = wSwirl * fall;
+          vx += -uy * swirl;
+          vy += ux * swirl;
+        }
+      }
+
+      px[i] += vx;
+      py[i] += vy;
 
       plife[i] -= 0.0026 + (1 - plife[i]) * 0.001;
 
@@ -477,6 +640,18 @@ function boot() {
     bloom.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = bloom;
     ctx.fillRect(0, 0, W, H);
+
+    // a faint glow at the well so the cursor reads as a presence in the field.
+    // Same blue family as the bloom, no new hue, fades with the well strength.
+    if (well.have && well.strength > 0.01) {
+      const gR = wellRadius() * 0.5;
+      const glow = ctx.createRadialGradient(well.x, well.y, 0, well.x, well.y, gR);
+      const ga = 0.10 * well.strength;
+      glow.addColorStop(0, `rgba(${br},${bg},${bb},${ga})`);
+      glow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     ctx.globalCompositeOperation = 'source-over';
   }
@@ -538,7 +713,18 @@ function boot() {
   const stop = rafLoop(frame, { fps: 60 });
 
   // tidy up if the page is ever torn down (defensive; static site)
-  window.addEventListener('pagehide', () => { stop(); score.stop(); view.dispose(); }, { once: true });
+  window.addEventListener('pagehide', () => {
+    stop();
+    score.stop();
+    view.dispose();
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerleave', onPointerLeave);
+    window.removeEventListener('pointercancel', onPointerLeave);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('touchend', onTouchEnd);
+    window.removeEventListener('touchcancel', onTouchEnd);
+    window.removeEventListener('blur', onPointerLeave);
+  }, { once: true });
 }
 
 if (document.readyState === 'loading') {

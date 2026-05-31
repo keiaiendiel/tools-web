@@ -1,240 +1,198 @@
 ---
-/* /lab — the index of design-exploration variants.
-   The page Antonín lands on to review the five directions and pick a home.
-   On-brand ink-on-paper; the previews are the visual interest. */
-import '../../styles/tokens.css';
-import VariantNav from '../../components/variants/VariantNav.astro';
-
-const base = import.meta.env.BASE_URL;
-
-const variants = [
-  {
-    n: 1,
-    name: 'Press',
-    concept: 'Ink on paper, pushed to a printed object. Riso misregistration, letterpress type, a quiet ink bleed in the claim.',
-    tags: ['light', 'editorial', 'tactile', 'type-led'],
-  },
-  {
-    n: 2,
-    name: 'Terminal',
-    concept: 'A living ASCII field you disturb with the cursor, and a terminal you can actually type into to walk the studio.',
-    tags: ['dark', 'interactive', 'game-like', 'ascii'],
-  },
-  {
-    n: 3,
-    name: 'Composition',
-    concept: 'A parametric music video. An optional generative score drives the field; scroll scrubs the timeline, copy lands as captions.',
-    tags: ['audio-reactive', 'motion', 'cinematic'],
-  },
-  {
-    n: 4,
-    name: 'Schematic',
-    concept: 'The studio drawn as an engineering sheet. Dimension lines, a title block, ink that draws itself on the way down.',
-    tags: ['blueprint', 'svg', 'precise', 'technical'],
-  },
-  {
-    n: 5,
-    name: 'Field',
-    concept: 'A three-dimensional field of glyphs in real WebGL. The claim assembles out of a point cloud you move through.',
-    tags: ['webgl', '3d', 'immersive', 'spatial'],
-  },
-  {
-    n: 6,
-    name: 'Probe',
-    concept: 'Not a page, an intake. It quietly asks what you keep doing by hand, and a slime-mold network grows on the back, connecting each answer into the one tool that fits.',
-    tags: ['interactive', 'generative', 'physarum', 'intake'],
-  },
-];
+import VariantBase from '../../layouts/VariantBase.astro';
+import { altCopy } from '../../i18n/alt-copy.js';
+import Inquiry from '../../components/Inquiry.astro';
+import '../../styles/variants/v2.css';
+const c = altCopy;
+const trades = Object.keys(c.fields.examples);
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Design exploration for tools.kindl.work - five distinct web experiences for the same small-software studio." />
-    <meta name="theme-color" content="#f4f1ea" />
-    <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" href={base + 'favicon.svg'} type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-    />
-    <title>The lab - six readings of one studio - tools.kindl.work</title>
-  </head>
-  <body class="lab">
-    <a class="skip-link" href="#main">Skip to content</a>
+<VariantBase
+  n={2}
+  title="Antonin Kindl - small software, made to fit"
+  description="A terminal you can type into. Small custom software by Antonin Kindl, alongside the art studio at kindl.work. A tool the exact size of your task."
+  themeColor="#0a0a0e"
+  bodyClass="v2"
+>
+  <!-- living ASCII field, decorative -->
+  <div class="v2-field" aria-hidden="true"><canvas></canvas></div>
+  <!-- faint CRT scanline + bloom, decorative -->
+  <div class="v2-crt" aria-hidden="true"></div>
 
-    <header class="lab__top">
-      <span class="lab__wm">k<b>.</b>work</span>
-      <span class="lab__topright">design exploration</span>
-    </header>
+  <main id="main" class="v2">
+    <div class="v2-shell">
 
-    <main id="main" class="lab__wrap">
-      <section class="lab__head">
-        <p class="lab__eyebrow">tools.kindl.work / variants</p>
-        <h1 class="lab__title">Six ways to open<br />the same studio.</h1>
-        <p class="lab__sub">
-          One small-software practice, built as six different web experiences. Same studio, six aesthetics,
-          and each now speaks in its own voice. Open each, live with it for a minute, and we choose the home together.
-        </p>
-        <p class="lab__note">
-          <a href={base}>← the current site</a>
-          <span class="lab__dot">·</span>
-          built alongside the art studio at <a href="https://kindl.work" target="_blank" rel="noopener">kindl.work&nbsp;↗</a>
-        </p>
+      <header class="v2-crumb v2-rise">
+        <span class="dot" aria-hidden="true"></span>
+        <span><span class="host">kindl.work</span> / small-software bench</span>
+        <span class="uptime" aria-hidden="true">live</span>
+      </header>
+
+      <!-- The terminal window. The prompt row is baked in; boot text and command
+           output are appended by JS as real selectable text. The static
+           <noscript>-style fallback below carries the full copy when JS is off. -->
+      <section class="v2-term v2-rise" aria-label="Interactive terminal">
+        <div class="v2-bar">
+          <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="title">bench.sh</span>
+          <span class="badge" aria-hidden="true">online</span>
+        </div>
+
+        <div class="v2-log" role="log" aria-live="polite" aria-label="Terminal output">
+          <!-- live prompt: JS reveals it after the boot sequence -->
+          <div class="v2-prompt">
+            <span class="pr" aria-hidden="true">kindl.work:~$</span>
+            <label class="v2-input-wrap">
+              <span class="visually-hidden" style="position:absolute;left:-9999px;">Type a command</span>
+              <input
+                class="v2-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                inputmode="text"
+                aria-label="Type a command: help, bench, ships, fields, order, about, kindl, clear"
+              />
+              <span class="v2-caret" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
       </section>
 
-      <ol class="lab__list">
-        {variants.map((v) => (
-          <li class="lab__item">
-            <a class="lab__link" href={base + v.n} aria-label={`Open variant ${v.n}, ${v.name}`}>
-              <div class="lab__thumb">
-                <img
-                  src={`${base}lab/v${v.n}.jpg`}
-                  alt={`Preview of variant ${v.n}, ${v.name}`}
-                  loading="lazy"
-                  width="860" height="538"
-                  onerror="this.style.display='none';this.parentElement.classList.add('is-empty')"
-                />
-                <span class="lab__thumbno">{String(v.n).padStart(2, '0')}</span>
-              </div>
-              <div class="lab__meta">
-                <h2 class="lab__name">
-                  <span class="lab__no">{String(v.n).padStart(2, '0')}</span>
-                  {v.name}
-                </h2>
-                <p class="lab__concept">{v.concept}</p>
-                <ul class="lab__tags">
-                  {v.tags.map((t) => <li>{t}</li>)}
-                </ul>
-                <span class="lab__open">open <span class="lab__arrow">→</span></span>
-              </div>
-            </a>
-          </li>
-        ))}
-      </ol>
+      <!-- Command chips: the primary control on touch, and discoverability for all.
+           Real buttons, keyboard reachable, large tap targets. -->
+      <nav class="v2-chips v2-rise" aria-label="Run a command">
+        <span class="lab">run</span>
+        <button class="v2-chip" data-cmd="help" type="button">help</button>
+        <button class="v2-chip" data-cmd="bench" type="button">bench</button>
+        <button class="v2-chip" data-cmd="ships" type="button">ships</button>
+        <button class="v2-chip" data-cmd="fields" type="button">fields</button>
+        <button class="v2-chip" data-cmd="order" type="button">order</button>
+        <button class="v2-chip" data-cmd="about" type="button">about</button>
+        <button class="v2-chip is-ext" data-cmd="kindl" type="button">kindl</button>
+      </nav>
 
-      <footer class="lab__foot">
-        <span>Antonín Kindl - small software, made to fit.</span>
-        <span class="lab__footr">exploration · not indexed</span>
+      <!-- The two CTAs, quiet and tasteful. Single contact surface for now. -->
+      <div class="v2-cta v2-rise">
+        <button class="v2-btn v2-btn--primary" type="button" data-open-inquiry>
+          {c.order.cta1} <span class="arr" aria-hidden="true">&#8599;</span>
+        </button>
+        <a class="v2-btn v2-btn--ghost" href="https://kindl.work" target="_blank" rel="noopener">
+          {c.order.cta2} <span class="arr" aria-hidden="true">&#8599;</span>
+        </a>
+      </div>
+
+      <footer class="v2-foot v2-rise">
+        <div class="v2-foot__sig">
+          {c.footer.sig1}<b>{c.footer.sigBold}</b>{c.footer.sig2}
+        </div>
+        <div>
+          <h5>{c.footer.studio}</h5>
+          <ul>
+            <li><a href="https://kindl.work" target="_blank" rel="noopener">kindl.work &#8599;</a></li>
+            <li><b>{c.footer.role}</b></li>
+            <li>{c.footer.place}</li>
+          </ul>
+        </div>
+        <div>
+          <h5>{c.footer.now}</h5>
+          <ul>
+            <li>{c.hero.meta[0]}</li>
+            <li>{c.hero.meta[1]}</li>
+            <li>{c.hero.meta[2]}</li>
+          </ul>
+        </div>
       </footer>
-    </main>
 
-    <VariantNav current={0} />
+      <!-- =================================================================
+           No-JS / screen-reader fallback. Carries the full copy as real,
+           selectable text. Hidden once the terminal boots (JS sets a class on
+           <html>); shown otherwise so the page is never empty of content.
+      ================================================================== -->
+      <section class="v2-static" aria-label="Full content">
+        <h2 class="v2-banner">{c.hero.claim1}<span class="ln2">{c.hero.claim2}</span></h2>
+        <p class="v2-banner-sub">{c.hero.sub}</p>
+        <p class="v2-soft">{c.hero.intro}</p>
 
-    <style is:global>
-      .skip-link {
-        position: absolute; left: -9999px; top: 0;
-        background: #17150f; color: #f4f1ea; padding: 8px 12px; z-index: 10000;
-        font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-      }
-      .skip-link:focus { left: 8px; top: 8px; }
-    </style>
+        <h3 class="v2-h">{c.how.h}</h3>
+        <p class="v2-soft">{c.how.p1}</p>
+        <p class="v2-soft">{c.how.p2}</p>
 
-    <style>
-      .lab { background: var(--paper); color: var(--ink); min-height: 100vh; padding-bottom: 96px; }
+        <h3 class="v2-h">{c.bench.h}</h3>
+        <p class="v2-soft">{c.bench.intro}</p>
+        <ul>
+          {c.bench.lines.map((ln) => (
+            <li><b class="v2-h">{ln.k}</b> {ln.d}</li>
+          ))}
+        </ul>
+        <ul>
+          {c.bench.items.map((it) => (
+            <li><span class="nm">{it.nm}</span> <span class="who">{it.who}</span></li>
+          ))}
+        </ul>
 
-      .lab__top {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 16px clamp(20px, 5vw, 80px);
-        border-bottom: 1px solid var(--rule);
-        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
-        color: var(--ink-soft);
-      }
-      .lab__wm { font-family: var(--font-pixel); font-size: 1.2rem; letter-spacing: 0; color: var(--ink); }
-      .lab__wm b { color: var(--accent); }
-      .lab__topright { text-transform: uppercase; letter-spacing: 0.22em; font-size: 11px; color: var(--ink-faint); }
+        <h3 class="v2-h">{c.fields.h}</h3>
+        <p class="v2-soft">{c.fields.intro}</p>
+        {trades.map((trade) => (
+          <div>
+            <h4 class="v2-em">{trade}</h4>
+            <ul>
+              {c.fields.examples[trade].map(([name, who]) => (
+                <li><span class="nm">{name}</span> <span class="who">{who}</span></li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
-      .lab__wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: clamp(20px, 5vw, 80px); }
+        <h3 class="v2-h">{c.band.line1} {c.band.line2}</h3>
+        <p class="v2-soft">{c.band.sub}</p>
 
-      .lab__head { padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 72px); }
-      .lab__eyebrow {
-        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
-        text-transform: uppercase; color: var(--accent); margin: 0 0 24px;
-      }
-      .lab__title {
-        font-family: var(--font-serif); font-weight: 600;
-        font-size: clamp(2.6rem, 7vw, 5.2rem); line-height: 1.02; letter-spacing: -0.02em;
-        margin: 0; text-wrap: balance;
-      }
-      .lab__sub {
-        margin: 28px 0 0; max-width: 56ch;
-        font-family: var(--font-mono); font-size: 15px; line-height: 1.62; color: var(--ink-soft);
-      }
-      .lab__note {
-        margin: 24px 0 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint);
-        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-      }
-      .lab__note a { color: var(--ink-soft); border-bottom: 1px solid var(--accent-line); }
-      .lab__note a:hover { color: var(--accent); }
-      .lab__dot { color: var(--ink-faint); }
+        <h3 class="v2-h">{c.ships.h}</h3>
+        <ul>
+          {c.ships.items.map((s) => (
+            <li>
+              <span class="no">{s.no}</span> <b class="snm">{s.nm}</b> <span class="who">{s.who}</span>
+              <span class="what">{s.what}</span>
+            </li>
+          ))}
+        </ul>
 
-      .lab__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
-      .lab__item { border-bottom: 1px solid var(--rule); }
-      .lab__link {
-        display: grid; grid-template-columns: 0.92fr 1.08fr; gap: clamp(24px, 4vw, 56px);
-        align-items: center; padding-block: clamp(28px, 4vw, 48px);
-        color: inherit; text-decoration: none;
-        transition: opacity 0.25s ease;
-      }
-      .lab__item:hover .lab__thumb img { transform: scale(1.03); }
-      .lab__item:hover .lab__open { color: var(--accent); }
-      .lab__item:hover .lab__arrow { transform: translateX(5px); }
+        <h3 class="v2-h">{c.order.h}</h3>
+        <ul>
+          {c.order.cols.map((col) => (
+            <li><b class="t">{col.t}</b> <span class="px">{col.px}</span> <span class="v2-way-d">{col.d}</span></li>
+          ))}
+        </ul>
+      </section>
 
-      .lab__thumb {
-        position: relative; aspect-ratio: 16 / 10; overflow: hidden;
-        background: var(--paper-2); border: 1px solid var(--rule);
-      }
-      .lab__thumb img {
-        width: 100%; height: 100%; object-fit: cover; display: block;
-        transition: transform 0.5s var(--ease);
-      }
-      .lab__thumb.is-empty {
-        background:
-          repeating-linear-gradient(135deg, transparent 0 11px, rgba(54,44,202,0.05) 11px 12px),
-          var(--paper-2);
-      }
-      .lab__thumbno {
-        position: absolute; left: 12px; bottom: 8px;
-        font-family: var(--font-pixel); font-size: 1.4rem; color: var(--accent);
-        mix-blend-mode: multiply; opacity: 0.9;
-      }
+    </div>
+  </main>
 
-      .lab__name {
-        font-family: var(--font-serif); font-weight: 600; font-size: clamp(1.8rem, 3.4vw, 2.75rem);
-        line-height: 1.05; letter-spacing: -0.02em; margin: 0;
-        display: flex; align-items: baseline; gap: 16px;
-      }
-      .lab__no {
-        font-family: var(--font-mono); font-weight: 500; font-size: 13px;
-        letter-spacing: 0.22em; color: var(--accent); align-self: center;
-      }
-      .lab__concept { margin: 16px 0 0; max-width: 52ch; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
-      .lab__tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
-      .lab__tags li {
-        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em;
-        padding: 4px 9px; border: 1px solid var(--rule); color: var(--ink-faint);
-      }
-      .lab__open {
-        display: inline-flex; align-items: center; gap: 8px; margin-top: 22px;
-        font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
-        color: var(--ink); transition: color 0.2s ease;
-      }
-      .lab__arrow { transition: transform 0.2s var(--ease); }
+  <Inquiry lang="en" />
 
-      .lab__foot {
-        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-        margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--rule);
-        font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); letter-spacing: 0.03em;
-      }
-      .lab__footr { text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; }
+  <style is:global>
+    /* The static fallback is real content; hide it only when JS has booted the
+       terminal (the script adds .v2-js to <html>). Keeps copy selectable and
+       present for no-JS and assistive tech. */
+    .v2-static { color: var(--t-ink-soft); display: grid; gap: 14px; padding-top: 8px; }
+    .v2-static h3 { margin: 18px 0 4px; }
+    .v2-static h4 { margin: 10px 0 2px; }
+    .v2-static ul { display: grid; gap: 4px; }
+    .v2-static .who { color: var(--t-ink-faint); margin-left: 8px; }
+    .v2-static .px { color: var(--t-amber); margin-left: 8px; }
+    html.v2-js .v2-static { display: none; }
+  </style>
 
-      @media (max-width: 760px) {
-        .lab__link { grid-template-columns: 1fr; gap: 18px; }
-        .lab__name { font-size: 1.9rem; }
-      }
-    </style>
-  </body>
-</html>
+  <script is:inline>
+    /* Flag JS as available before paint so the static fallback never flashes
+       for the common (JS-on) case. The module script then renders the terminal. */
+    document.documentElement.classList.add('v2-js');
+  </script>
+
+  <script>
+    import '../../scripts/variants/v2.js';
+    import { initInquiry } from '../../scripts/inquiry.js';
+    const inqEl = document.querySelector('[data-inquiry]');
+    if (inqEl) initInquiry(inqEl);
+  </script>
+</VariantBase>

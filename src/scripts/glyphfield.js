@@ -228,6 +228,11 @@ export function initGlyphField(canvas) {
   }
 
   // --- Pointer wake (skip on touch, where hover is meaningless) -------------
+  // Listen on the whole hero, not the canvas: the headline + copy (hero__inner)
+  // sit ABOVE the canvas, so a listener on the canvas never fires over the text.
+  // Listening on the hero section catches the pointer everywhere and we map it to
+  // the canvas box, so the wake follows the cursor across the entire hero.
+  const surface = canvas.closest('.hero') || canvas;
   const onMove = (e) => {
     const rect = canvas.getBoundingClientRect();
     pX = e.clientX - rect.left;
@@ -238,8 +243,8 @@ export function initGlyphField(canvas) {
   let pointerWired = false;
   function wirePointer() {
     if (pointerWired || (matchMedia && matchMedia('(pointer: coarse)').matches)) return;
-    canvas.addEventListener('pointermove', onMove, { passive: true });
-    canvas.addEventListener('pointerleave', onLeave, { passive: true });
+    surface.addEventListener('pointermove', onMove, { passive: true });
+    surface.addEventListener('pointerleave', onLeave, { passive: true });
     pointerWired = true;
   }
 
@@ -274,8 +279,8 @@ export function initGlyphField(canvas) {
     stop();
     dispose();
     if (pointerWired) {
-      canvas.removeEventListener('pointermove', onMove);
-      canvas.removeEventListener('pointerleave', onLeave);
+      surface.removeEventListener('pointermove', onMove);
+      surface.removeEventListener('pointerleave', onLeave);
     }
   };
 }

@@ -23,9 +23,9 @@ import {
   fitCanvas, rafLoop, makeNoise2D, readPalette,
   cellMetrics, GLYPHS, prefersReducedMotion, mixHex,
 } from '../glyph-core.js';
-import { vcopy } from '../../i18n/variant-copy.js';
+import { altCopy } from '../../i18n/alt-copy.js';
 
-const c = vcopy[2];
+const c = altCopy;
 const reduce = prefersReducedMotion();
 
 /* ---------------------------------------------------------------------------

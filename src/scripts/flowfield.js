@@ -178,9 +178,10 @@ export function initFlowField(canvas) {
       if (isGlint || near > 0.35) {
         colour = mixHex(pal.nightFaint, pal.accent, isGlint ? 0.85 : 0.45 * near + 0.2);
       } else {
-        // night -> night-faint by energy; stays quiet, especially in the calm
-        // headline zone where calm pulls it back toward the ground.
-        colour = mixHex(pal.night, pal.nightFaint, (0.4 + energy * 0.6) * calm);
+        // night-faint lifted toward a light slate by energy, so the currents
+        // read brighter on the dark ground; calm pulls the headline zone back.
+        const lift = (0.35 + energy * 0.65) * calm;
+        colour = mixHex(pal.nightFaint, '#9a96ad', lift);
       }
       ctx.fillStyle = colour;
       ctx.fillText(glyph, nx, ny);
@@ -190,7 +191,9 @@ export function initFlowField(canvas) {
   // One animated frame: veil, then step + draw. The veil is a translucent night
   // fill (not a clear) so glyph trails persist and fade into the ground.
   function frame() {
-    ctx.globalAlpha = 0.12;
+    // A firmer veil so trails fade in a few frames instead of stacking into
+    // persistent grey layers; the currents stay legible without the smear.
+    ctx.globalAlpha = 0.28;
     ctx.fillStyle = pal.night;
     ctx.fillRect(0, 0, vw, vh);
     ctx.globalAlpha = 1;

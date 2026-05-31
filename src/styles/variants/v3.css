@@ -51,6 +51,12 @@
     radial-gradient(120% 90% at 50% 8%, rgba(54, 44, 202, 0.16), transparent 60%),
     radial-gradient(140% 120% at 50% 120%, rgba(43, 182, 201, 0.07), transparent 55%),
     var(--v3-ground);
+  /* The composition is the background; pointer events pass through to the
+     page so scrolling and the captions keep working. The gravity well listens
+     on window, not on this element, so it does not need to be hit-testable.
+     touch-action stays at the default so the page still scrolls on touch. */
+  pointer-events: none;
+  will-change: contents;
 }
 
 /* Vignette + a faint scanned grade keep the captions legible over the field. */

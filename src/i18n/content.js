@@ -17,7 +17,7 @@ export const content = {
     htmlLang: 'en',
     title: 'Antonín Kindl - small software, made to fit',
     description: 'Small custom software, built by Antonín Kindl alongside the art studio at kindl.work. Some tools you can use right now; some I build to order: parametric generators, stage and event calculators, computer-vision and installation utilities.',
-    nav: { how: 'how it helps', bench: 'the bench', fields: 'your field', order: 'get a tool' },
+    nav: { how: 'how it helps', bench: 'the lab', fields: 'your field', order: 'get a tool' },
     hero: {
       claim1: 'Small software,',
       claim2: 'made to fit.',
@@ -27,15 +27,15 @@ export const content = {
     },
     how: {
       h: 'A tool the exact size of your task.',
-      p1: 'Big software is built for everyone, so it fits no one exactly. You bend your week around its menus. A small tool shaped to a single task works the other way: it fits how you already work, and it quietly does the repeating part for you.',
-      p2: 'Most of the bench runs in your browser, free. If the tool you need does not exist yet, that is usually a small job. Tell me the task and the shape of your data; I build the tool around it, in your style, and hand it over. The art studio at kindl.work makes perceptual machines: computer vision, projection, kinetics, generative graphics. The software here comes from the same studio.',
+      p1: 'I have always built my own small tools to get the work moving: the export script, the layout helper, the calculator I needed once and then every week after. There was rarely the budget to build them properly. That changed, doing it well got quick, so a tool can be made for the one task instead of bending software built for everyone around it. A small tool fits how you already work, and quietly does the repeating part for you.',
+      p2: 'Most of the lab runs in your browser, free. If the tool you need does not exist yet, that is usually a small job. Tell me the task and the shape of your data; I build the tool around it, in your style, and hand it over. The art studio at kindl.work makes perceptual machines: computer vision, projection, kinetics, generative graphics. The software here comes from the same studio.',
       barLabel: 'one template',
       hintFine: 'move across →',
       hintCoarse: 'drag across →',
       cap: 'One template, every version of the work, made on the spot. That is what a generator does for you: the repeating, instantly, on brand.',
     },
     bench: {
-      h: 'What comes off the bench.',
+      h: 'What comes out of the lab.',
       intro: "Four lines, chosen where the studio's edge shows and the budgets are real. The catalog grows; this is the working face of it.",
       lines: [
         { k: 'Design → tool',                  d: 'A finished visual, rebuilt as a generator the client runs alone.' },
@@ -110,7 +110,19 @@ export const content = {
       note: 'This opens your mail with the message ready. Nothing is sent until you confirm it there.',
       copy: 'Copy instead',
       copied: 'Copied to clipboard',
+      back: 'back',
+      next: 'next',
+      step: 'step',
       close: 'Close',
+    },
+    faq: {
+      h: 'A few honest questions.',
+      items: [
+        { q: 'Can I not just build this myself with AI now?', a: "Yes, and that is the good part: the barrier is gone. What I add is time, taste, and the experience of having built a lot of these. I keep up with the tech and AI as it moves, I have a graphic and design sense that is mine and not a model's, and I have shipped enough small tools to know where they quietly break. If you would rather build it yourself, do. If you would rather it just exist and fit, that is what I am for." },
+        { q: 'How fast, and how much?', a: 'Most of the lab is free in the browser. A tool built to order is about a week, from €1500, fixed scope, handed over with docs. The first conversation is free.' },
+        { q: 'Do you keep my data, or lock me in?', a: 'No. The tools run in your browser, nothing is uploaded anywhere, there is no account and no subscription. You get a file you own, or a page that is only yours.' },
+        { q: 'What do you actually make?', a: 'Small software shaped to one task: parametric generators, AV and event calculators, computer-vision and installation utilities, TouchDesigner companions. If it is small and repetitive, it can probably become a tool.' },
+      ],
     },
   },
 
@@ -118,7 +130,7 @@ export const content = {
     htmlLang: 'cs',
     title: 'Antonín Kindl - malý software na míru',
     description: 'Malý software na míru. Antonín Kindl staví nástroje vedle uměleckého studia na kindl.work. Některé si pustíš rovnou v prohlížeči, jiné postavím na zakázku: parametrické generátory, AV a eventové kalkulačky, utility pro počítačové vidění a instalace.',
-    nav: { how: 'jak pomáhá', bench: 'ponk', fields: 'tvůj obor', order: 'získat nástroj' },
+    nav: { how: 'jak pomáhá', bench: 'laboratoř', fields: 'tvůj obor', order: 'získat nástroj' },
     hero: {
       claim1: 'Malý software,',
       claim2: 'šitý na míru.',
@@ -128,7 +140,7 @@ export const content = {
     },
     how: {
       h: 'Nástroj přesně na tvou úlohu.',
-      p1: 'Velký software se dělá pro všechny, a tak nikomu nesedne úplně přesně. Svůj týden ohýbáš podle jeho menu. Malý nástroj na jednu úlohu to má naopak: sedne na to, jak už pracuješ, a tu otravnou opakující se část udělá za tebe.',
+      p1: 'Odjakživa si dělám vlastní malé nástroje, abych se v práci pohnul: ten exportní skript, pomocníka na sazbu, kalkulačku, kterou jsem potřeboval jednou a pak každý týden. Skoro nikdy na ně nebyl rozpočet. To se změnilo, dělat to pořádně je dnes rychlé, takže nástroj může vzniknout přesně na tu jednu úlohu, místo abys ohýbal software pro všechny. Malý nástroj sedne na to, jak už pracuješ, a tu opakující se část udělá za tebe.',
       p2: 'Většina nástrojů běží rovnou v prohlížeči a jsou zdarma. A když ten, který potřebuješ, ještě neexistuje, je to většinou práce na pár hodin. Napiš mi, co řešíš a jak vypadají tvoje data; nástroj udělám přímo na to, ve tvém stylu, a předám ti ho. Vedle toho vedu na kindl.work umělecké studio: počítačové vidění, projekce, kinetiku, generativní grafiku. Software tady vzniká ze stejné praxe.',
       barLabel: 'jedna šablona',
       hintFine: 'přejeď přes ni →',
@@ -136,7 +148,7 @@ export const content = {
       cap: 'Jedna šablona, a každá verze hned. Přesně tohle za tebe generátor udělá: opakování okamžitě a pokaždé ve stejném stylu.',
     },
     bench: {
-      h: 'Co vzniká na ponku.',
+      h: 'Co vzniká v laboratoři.',
       intro: 'Čtyři linie tam, kde mám náskok a kde jsou reálné rozpočty. Katalog roste, tohle je jeho pracovní tvář.',
       lines: [
         { k: 'Návrh → nástroj',              d: 'Hotový vizuál, předělaný na generátor, který si klient pustí sám.' },
@@ -211,7 +223,19 @@ export const content = {
       note: 'Otevře se ti pošta s připravenou zprávou. Nic se neodešle, dokud to tam nepotvrdíš.',
       copy: 'Zkopírovat',
       copied: 'Zkopírováno do schránky',
+      back: 'zpět',
+      next: 'dál',
+      step: 'krok',
       close: 'Zavřít',
+    },
+    faq: {
+      h: 'Pár upřímných otázek.',
+      items: [
+        { q: 'Nezvládnu si takový nástroj udělat sám přes AI?', a: 'Zvládneš, a to je právě dobře, bariéra spadla. Co přidávám navíc je čas, vkus a zkušenost z mnoha takových nástrojů. Držím krok s tím, jak se tech a AI hýbou, mám vlastní grafický a designový cit, ne modelový, a postavil jsem jich dost na to, abych věděl, kde se tiše lámou. Jestli si to chceš postavit sám, jdi do toho. Jestli chceš, aby to prostě existovalo a sedělo, jsem tu od toho.' },
+        { q: 'Jak rychle a za kolik?', a: 'Většina laboratoře je zdarma v prohlížeči. Nástroj na zakázku je zhruba za týden, od 1500 €, pevný rozsah, předaný s dokumentací. První hovor nic nestojí.' },
+        { q: 'Držíš si moje data, zamykáš mě někam?', a: 'Ne. Nástroje běží v tvém prohlížeči, nic se nikam nenahrává, žádný účet, žádné předplatné. Dostaneš soubor, který vlastníš, nebo stránku, která je jen tvoje.' },
+        { q: 'Co vlastně děláš?', a: 'Malý software na jednu úlohu: parametrické generátory, AV a eventové kalkulačky, nástroje pro počítačové vidění a instalace, společníky pro TouchDesigner. Když je něco malé a opakuje se, většinou z toho jde udělat nástroj.' },
+      ],
     },
   },
 };

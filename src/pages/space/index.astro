@@ -1,8 +1,9 @@
 ---
 import VariantBase from '../../layouts/VariantBase.astro';
-import { vcopy } from '../../i18n/variant-copy.js';
+import { altCopy } from '../../i18n/alt-copy.js';
+import Inquiry from '../../components/Inquiry.astro';
 import '../../styles/variants/v3.css';
-const c = vcopy[3];
+const c = altCopy;
 
 const fieldKeys = Object.keys(c.fields.examples);
 ---
@@ -155,7 +156,7 @@ const fieldKeys = Object.keys(c.fields.examples);
           ))}
         </ul>
         <div class="v3-cta" data-cap data-d="3">
-          <a class="v3-cta__primary" href="https://kindl.work" target="_blank" rel="noopener">{c.order.cta1}<span class="v3-cta__arrow" aria-hidden="true"> &rarr;</span></a>
+          <button class="v3-cta__primary" type="button" data-open-inquiry>{c.order.cta1}<span class="v3-cta__arrow" aria-hidden="true"> &rarr;</span></button>
           <a class="v3-cta__ghost" href="https://kindl.work" target="_blank" rel="noopener">{c.order.cta2}<span aria-hidden="true"> &nearr;</span></a>
         </div>
       </div>
@@ -173,7 +174,12 @@ const fieldKeys = Object.keys(c.fields.examples);
 
   </main>
 
+  <Inquiry lang="en" />
+
   <script>
     import '../../scripts/variants/v3.js';
+    import { initInquiry } from '../../scripts/inquiry.js';
+    const inqEl = document.querySelector('[data-inquiry]');
+    if (inqEl) initInquiry(inqEl);
   </script>
 </VariantBase>

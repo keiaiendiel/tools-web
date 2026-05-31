@@ -1,57 +1,164 @@
 ---
-/* Inquiry.astro - a light, non-binding "start a tool" intake dialog.
-   Native <dialog> for focus trap + Esc + backdrop. Reads copy from content[lang]
-   so it is bilingual. Opens from any [data-open-inquiry] trigger. On send it
-   composes a mailto with the answers; a copy fallback puts the same text on the
-   clipboard. Wired by src/scripts/inquiry.js (booted from main.js). */
+/* Inquiry.astro - a light, delightful, non-binding "start a tool" intake.
+   A native <dialog> walked one question at a time (Typeform-feel): tapping a
+   chip auto-advances, you can type your own, scroll-free, with a progress
+   tracker and a back step. Reads copy from content[lang] so it is bilingual.
+   On send it composes a pre-filled mail to the studio; a copy fallback puts the
+   same text on the clipboard. Wired by src/scripts/inquiry.js (booted in main.js). */
 import { content } from '../i18n/content.js';
 
 interface Props { lang: 'en' | 'cs'; }
 const { lang } = Astro.props;
 const q = content[lang].inquiry;
-const TO = 'a.kindl@pm.me';
+const TO = 'antonin@kindl.work';
+const steps = 4;
 ---
-<dialog class="inq" data-inquiry data-to={TO} data-subject={q.title} aria-labelledby="inq-title">
+<dialog class="inq" data-inquiry data-to={TO} data-subject={q.title} data-steps={steps} aria-labelledby="inq-title">
   <div class="inq__panel">
-    <button type="button" class="inq__x" data-inq-close aria-label={q.close}><span aria-hidden="true">&times;</span></button>
-    <p class="inq__eyebrow pix">tools<b>.</b>kindl<b>.</b>work</p>
-    <h2 id="inq-title" class="inq__title">{q.title}</h2>
-    <p class="inq__intro">{q.intro}</p>
-
-    <fieldset class="inq__q" data-group="who">
-      <legend class="inq__label">{q.who.label}</legend>
-      <div class="inq__chips" role="radiogroup" aria-label={q.who.label}>
-        {q.who.options.map((o) => (
-          <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
-        ))}
+    <header class="inq__head">
+      <span class="inq__eyebrow pix">tools<b>.</b>kindl<b>.</b>work</span>
+      <div class="inq__progress" data-inq-progress aria-hidden="true">
+        {Array.from({ length: steps }).map((_, i) => <span class={'inq__tick' + (i === 0 ? ' is-on' : '')} data-tick={i}></span>)}
       </div>
-      <input class="inq__other" type="text" data-other placeholder={q.who.other} aria-label={q.who.other} />
-    </fieldset>
+      <button type="button" class="inq__x" data-inq-close aria-label={q.close}><span aria-hidden="true">&times;</span></button>
+    </header>
 
-    <fieldset class="inq__q" data-group="need">
-      <legend class="inq__label">{q.need.label}</legend>
-      <div class="inq__chips" role="radiogroup" aria-label={q.need.label}>
-        {q.need.options.map((o) => (
-          <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
-        ))}
-      </div>
-      <input class="inq__other" type="text" data-other placeholder={q.need.other} aria-label={q.need.other} />
-    </fieldset>
+    <div class="inq__viewport">
+      {/* Step 0 - who */}
+      <section class="inq__step is-in" data-step="0" aria-label={q.who.label}>
+        <h2 id="inq-title" class="inq__title">{q.title}</h2>
+        <p class="inq__intro">{q.intro}</p>
+        <p class="inq__qlabel">{q.who.label}</p>
+        <div class="inq__chips" role="radiogroup" aria-label={q.who.label} data-group="who" data-advance>
+          {q.who.options.map((o) => (
+            <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
+          ))}
+        </div>
+        <input class="inq__other" type="text" data-other placeholder={q.who.other} aria-label={q.who.other} />
+      </section>
 
-    <div class="inq__q">
-      <label class="inq__label" for="inq-problem">{q.problem.label}</label>
-      <textarea id="inq-problem" class="inq__text" rows="3" data-field="problem" placeholder={q.problem.placeholder}></textarea>
+      {/* Step 1 - need */}
+      <section class="inq__step" data-step="1" aria-label={q.need.label} hidden>
+        <p class="inq__qlabel">{q.need.label}</p>
+        <div class="inq__chips" role="radiogroup" aria-label={q.need.label} data-group="need" data-advance>
+          {q.need.options.map((o) => (
+            <button type="button" class="inq__chip" role="radio" aria-checked="false" data-val={o}>{o}</button>
+          ))}
+        </div>
+        <input class="inq__other" type="text" data-other placeholder={q.need.other} aria-label={q.need.other} />
+      </section>
+
+      {/* Step 2 - the task */}
+      <section class="inq__step" data-step="2" aria-label={q.problem.label} hidden>
+        <label class="inq__qlabel" for="inq-problem">{q.problem.label}</label>
+        <textarea id="inq-problem" class="inq__text" rows="4" data-field="problem" placeholder={q.problem.placeholder}></textarea>
+      </section>
+
+      {/* Step 3 - where to reply + send */}
+      <section class="inq__step" data-step="3" aria-label={q.email.label} hidden>
+        <label class="inq__qlabel" for="inq-email">{q.email.label}</label>
+        <input id="inq-email" class="inq__input" type="email" data-field="email" placeholder={q.email.placeholder} autocomplete="email" inputmode="email" />
+        <div class="inq__recap" data-inq-recap aria-hidden="true"></div>
+        <div class="inq__actions">
+          <button type="button" class="pill pill--accent inq__send" data-inq-send>{q.send}</button>
+          <button type="button" class="pill" data-inq-copy data-copied={q.copied}>{q.copy}</button>
+        </div>
+        <p class="inq__note" data-inq-note>{q.note}</p>
+      </section>
     </div>
 
-    <div class="inq__q">
-      <label class="inq__label" for="inq-email">{q.email.label}</label>
-      <input id="inq-email" class="inq__input" type="email" data-field="email" placeholder={q.email.placeholder} autocomplete="email" inputmode="email" />
-    </div>
-
-    <div class="inq__actions">
-      <button type="button" class="pill pill--accent" data-inq-send>{q.send}</button>
-      <button type="button" class="pill" data-inq-copy data-copied={q.copied}>{q.copy}</button>
-    </div>
-    <p class="inq__note" data-inq-note>{q.note}</p>
+    <footer class="inq__foot">
+      <button type="button" class="inq__back" data-inq-back hidden>&larr; {q.back}</button>
+      <button type="button" class="inq__next" data-inq-next>{q.next} &rarr;</button>
+    </footer>
   </div>
 </dialog>
+
+<style is:global>
+  /* The form carries its own styles so it is styled on every page that uses it,
+     including the variant landings that load only tokens.css. Reads the studio
+     palette from the :root custom properties in tokens.css. */
+  .inq {
+    width: min(620px, 94vw); max-height: 88vh; margin: auto; padding: 0;
+    border: 1px solid var(--rule-bold); background: var(--paper); color: var(--ink);
+    box-shadow: 0 30px 90px rgba(16, 15, 20, 0.34); overflow: hidden;
+  }
+  .inq::backdrop { background: color-mix(in srgb, var(--night) 66%, transparent); backdrop-filter: blur(4px) saturate(1.05); }
+  .inq[open] { animation: inq-in 0.28s cubic-bezier(0, 0, 0.2, 1); }
+  @keyframes inq-in { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: none; } }
+  .inq__panel { position: relative; display: flex; flex-direction: column; min-height: 460px; max-height: 88vh; padding: clamp(20px, 3.5vw, 34px); }
+
+  .inq__head { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+  .inq__eyebrow { font-family: var(--font-pixel); font-size: 1rem; letter-spacing: 0; color: var(--ink); }
+  .inq__eyebrow b { color: var(--accent); font-weight: 400; }
+  .inq__progress { display: flex; gap: 6px; margin-left: auto; }
+  .inq__tick { width: 22px; height: 3px; background: var(--rule-bold); transition: background 0.28s cubic-bezier(0.2, 0, 0, 1); }
+  .inq__tick.is-on { background: var(--accent); }
+  .inq__x { width: 32px; height: 32px; display: grid; place-items: center; margin-right: -6px; font-size: 1.5rem; line-height: 1; color: var(--fg-muted); border: 1px solid transparent; cursor: pointer; }
+  .inq__x:hover { color: var(--ink); border-color: var(--rule); }
+
+  .inq__viewport { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+  .inq__step { display: flex; flex-direction: column; }
+  .inq__step[hidden] { display: none; }
+  .inq__step.is-in { animation: inq-step 0.36s cubic-bezier(0, 0, 0.2, 1) both; }
+  @keyframes inq-step { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  .inq__title { font-family: var(--font-serif); font-weight: 600; font-size: var(--t-2xl); line-height: var(--lh-snug); letter-spacing: var(--tr-tight); margin: 0; }
+  .inq__intro { margin: 12px 0 32px; font-size: var(--t-sm); line-height: var(--lh-norm); color: var(--fg-muted); max-width: 52ch; }
+  .inq__qlabel { display: block; font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: var(--tr-label); text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+
+  .inq__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .inq__chip {
+    font-family: var(--font-mono); font-size: var(--t-sm); letter-spacing: var(--tr-mono);
+    padding: 10px 15px; border: 1px solid var(--rule-bold); color: var(--ink); background: var(--paper); cursor: pointer;
+    transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+  }
+  .inq__chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+  .inq__chip[aria-checked="true"] { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .inq__step.is-in .inq__chip { animation: inq-chip 0.4s cubic-bezier(0, 0, 0.2, 1) both; }
+  .inq__step.is-in .inq__chip:nth-child(1) { animation-delay: 0.04s; }
+  .inq__step.is-in .inq__chip:nth-child(2) { animation-delay: 0.07s; }
+  .inq__step.is-in .inq__chip:nth-child(3) { animation-delay: 0.10s; }
+  .inq__step.is-in .inq__chip:nth-child(4) { animation-delay: 0.13s; }
+  .inq__step.is-in .inq__chip:nth-child(5) { animation-delay: 0.16s; }
+  .inq__step.is-in .inq__chip:nth-child(n+6) { animation-delay: 0.19s; }
+  @keyframes inq-chip { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .inq__other, .inq__text, .inq__input {
+    width: 100%; margin-top: 16px; padding: 11px 13px;
+    font-family: var(--font-mono); font-size: var(--t-sm); color: var(--ink);
+    background: var(--paper-2); border: 1px solid var(--rule);
+  }
+  .inq__text { resize: vertical; min-height: 96px; line-height: var(--lh-norm); margin-top: 0; }
+  .inq__input { margin-top: 0; }
+  .inq__other::placeholder, .inq__text::placeholder, .inq__input::placeholder { color: var(--fg-faint); }
+  .inq__other:focus, .inq__text:focus, .inq__input:focus, .inq__chip:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+
+  .inq__recap { margin-top: 16px; font-family: var(--font-mono); font-size: var(--t-2xs); letter-spacing: var(--tr-mono); color: var(--accent); min-height: 1em; }
+  .inq__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  /* the form's own buttons, so it does not depend on kit.css .pill */
+  .inq .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; cursor: pointer;
+    border: 1px solid var(--rule-bold); font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono);
+    color: var(--ink); background: var(--paper);
+    transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+  }
+  .inq .pill:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); transform: translateY(-1px); }
+  .inq .pill--accent { border-color: var(--accent); color: var(--accent); }
+  .inq .pill--accent:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .inq__note { margin: 16px 0 0; font-size: var(--t-2xs); color: var(--fg-faint); line-height: var(--lh-norm); }
+
+  .inq__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .inq__back, .inq__next { font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: var(--tr-mono); color: var(--fg-muted); padding: 6px 4px; cursor: pointer; transition: color 0.14s ease; }
+  .inq__back:hover, .inq__next:hover { color: var(--accent); }
+  .inq__back[hidden], .inq__next[hidden] { display: none; }
+  .inq__next { margin-left: auto; color: var(--accent); }
+
+  @media (max-width: 520px) {
+    .inq { width: 100vw; max-width: 100vw; max-height: 100vh; height: 100%; border: 0; }
+    .inq__panel { min-height: 100%; max-height: 100vh; padding: 20px 18px 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .inq[open], .inq__step.is-in, .inq__step.is-in .inq__chip { animation: none; }
+  }
+</style>
