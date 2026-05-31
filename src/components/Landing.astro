@@ -77,11 +77,11 @@ const firstKey = exKeys[0];
       <h2 class="h2" data-reveal>{c.bench.h}</h2>
       <p class="body lede muted" data-reveal style="margin-top: var(--s-5); max-width: 56ch;">{c.bench.intro}</p>
 
-      <div class="grid grid--2" data-reveal style="margin-top: var(--s-7); gap: var(--s-5);">
+      <div class="lab-lines" data-reveal style="margin-top: var(--s-7);">
         {c.bench.lines.map((l) => (
-          <div style="border-top: 2px solid var(--accent); padding-top: var(--s-3);">
-            <h3 class="h3" style="font-size: var(--t-lg);">{l.k}</h3>
-            <p class="muted" style="margin-top: var(--s-2); font-size: var(--t-sm);">{l.d}</p>
+          <div class="lab-box">
+            <h3 class="h3 lab-box__k">{l.k}</h3>
+            <p class="muted lab-box__d">{l.d}</p>
           </div>
         ))}
       </div>

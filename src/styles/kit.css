@@ -134,6 +134,15 @@
 .machine .lines li .muted { color: color-mix(in srgb, var(--accent) 60%, #fff 40%); }
 .lines li .tag { margin-left: auto; font-size: var(--t-2xs); color: var(--fg-faint); letter-spacing: var(--tr-label); text-transform: uppercase; }
 
+/* The four lab lines as a single row of four boxes (a placeholder until real
+   examples replace them). Collapses 4 -> 2 -> 1 as the viewport narrows. */
+.lab-lines { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-4); }
+@media (max-width: 980px) { .lab-lines { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .lab-lines { grid-template-columns: 1fr; } }
+.lab-box { border: 1px solid var(--rule); border-top: 2px solid var(--accent); padding: var(--s-4); }
+.lab-box__k { font-size: var(--t-lg); }
+.lab-box__d { margin-top: var(--s-2); font-size: var(--t-sm); }
+
 /* ---------- Ship cards (the first three) ---------- */
 .ships { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); }
 @media (max-width: 860px) { .ships { grid-template-columns: 1fr; } }
@@ -227,17 +236,17 @@
 }
 .ex-chip:hover { background: var(--accent-soft); border-color: var(--accent); }
 .ex-chip[aria-selected='true'] { background: var(--accent); color: var(--paper); border-color: var(--accent); }
-/* examples as a row of boxes, not a plain text list */
-.ex-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(218px, 1fr)); gap: var(--s-3); min-height: 280px; }
-@media (max-width: 720px) { .ex-list { grid-template-columns: 1fr; min-height: 0; } }
+/* examples as a clean 3-up list (6 items -> 3x2 on desktop), name + who rows,
+   not big boxes. 3 -> 2 -> 1 columns as the viewport narrows. */
+.ex-list { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: var(--s-7); align-content: start; }
+@media (max-width: 860px) { .ex-list { grid-template-columns: repeat(2, 1fr); column-gap: var(--s-6); } }
+@media (max-width: 560px) { .ex-list { grid-template-columns: 1fr; } }
 .ex-list li {
-  break-inside: avoid; padding: var(--s-4); border: 1px solid var(--rule);
-  display: flex; flex-direction: column; gap: 7px; align-items: flex-start; min-height: 80px;
-  transition: border-color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+  padding-block: 10px; border-bottom: 1px solid var(--rule);
+  display: flex; gap: var(--s-3); align-items: baseline;
 }
-.ex-list li:hover { border-color: var(--accent-line); background: var(--accent-soft); }
 .ex-list li .nm { color: var(--fg); font-size: var(--t-sm); }
-.ex-list li .who { font-size: var(--t-2xs); color: var(--accent); letter-spacing: var(--tr-mono); text-align: left; }
+.ex-list li .who { margin-left: auto; font-size: var(--t-2xs); color: var(--accent); letter-spacing: var(--tr-mono); text-align: right; white-space: nowrap; }
 
 /* ---------- Flowfield band (full-bleed expressive moment) ---------- */
 .band { position: relative; background: var(--night); color: var(--night-ink); overflow: hidden; min-height: 58svh; display: flex; align-items: center; }

@@ -1,7 +1,7 @@
 /* =============================================================================
    examples.js — the "it fits your field too" explorer
    -----------------------------------------------------------------------------
-   The fields section: a row of chips, one per trade, over a two-column list of
+   The fields section: a row of chips, one per trade, over a three-up list of
    concrete tools. Click a chip and the list swaps to that field's items, each
    name resolving left-to-right out of scramble noise into the real text,
    staggered down the list, the same readout-locking feel as the dark catalog.
